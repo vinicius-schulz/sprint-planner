@@ -18,11 +18,33 @@
   <div class="container my-4">
     <h1 class="mb-4">Calculadora de Capacidade Scrum</h1>
 
+    <!-- Informações da Sprint -->
+    <div class="card mb-3">
+      <div class="card-header">Informações da Sprint</div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="sprintTitle" class="form-label">Título da Sprint</label>
+          <input type="text" id="sprintTitle" class="form-control" placeholder="Digite o título da sprint">
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="sprintStartDate" class="form-label">Data de Início</label>
+            <input type="date" id="sprintStartDate" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="sprintEndDate" class="form-label">Data de Fim</label>
+            <input type="date" id="sprintEndDate" class="form-control">
+          </div>
+        </div>
+        <small class="text-muted">Alterar as datas da sprint recalcula automaticamente os dias não úteis para os fins de semana padrão.</small>
+      </div>
+    </div>
+
     <!-- Parâmetros da Sprint -->
     <div class="card mb-3">
       <div class="card-header">Parâmetros da Sprint</div>
       <div class="card-body">
-        <div class="row g-3">
+        <div class="row g-3 mb-3">
           <div class="col-md-4">
             <label for="totalHorasSprint" class="form-label">Horas Úteis Totais da Sprint</label>
             <input type="number" id="totalHorasSprint" class="form-control" value="80" min="0">
@@ -33,11 +55,23 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Capacidade Total (SP)</label>
-            <!-- Exibição somente leitura -->
             <input type="text" id="totalCapacityDisplay" class="form-control" value="0" readonly>
           </div>
         </div>
-        <small class="text-muted">Ex.: 80 horas com 85% de aproveitamento → 68 horas úteis.</small>
+        <small class="text-muted d-block mb-3">Ex.: 80 horas com 85% de aproveitamento → 68 horas úteis.</small>
+
+        <!-- Seção Dias Não Úteis -->
+        <div class="mb-3">
+          <h5>Dias Não Úteis</h5>
+          <p class="text-muted">Os finais de semana serão adicionados automaticamente. Remova um dia para torná-lo trabalhável ou adicione manualmente outros dias não úteis.</p>
+          <div class="input-group mb-3">
+            <input type="date" id="nonWorkingDayInput" class="form-control">
+            <button id="addNonWorkingDay" class="btn btn-primary">Adicionar Dia Não Útil</button>
+          </div>
+          <ul class="list-group" id="nonWorkingDaysList">
+            <!-- Lista de dias não úteis -->
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -135,6 +169,70 @@
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Array global para armazenar os dias não úteis (no formato YYYY-MM-DD)
+    let nonWorkingDays = [];
+
+    // Função para renderizar a lista de dias não úteis
+    function renderNonWorkingDaysList() {
+      const list = document.getElementById('nonWorkingDaysList');
+      list.innerHTML = '';
+      nonWorkingDays.sort(); // Ordena as datas
+      nonWorkingDays.forEach(date => {
+        const li = document.createElement('li');
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.textContent = date;
+        const btn = document.createElement('button');
+        btn.className = "btn btn-danger btn-sm";
+        btn.textContent = "Remover";
+        btn.addEventListener('click', () => {
+          nonWorkingDays = nonWorkingDays.filter(d => d !== date);
+          renderNonWorkingDaysList();
+        });
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    // Função para atualizar os dias não úteis com base nas datas da sprint (adiciona finais de semana automaticamente)
+    function updateNonWorkingDaysFromDates() {
+      const startDateStr = document.getElementById('sprintStartDate').value;
+      const endDateStr = document.getElementById('sprintEndDate').value;
+      if (!startDateStr || !endDateStr) return;
+      
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+      if (startDate > endDate) return;
+      
+      // Calcula as datas de sábado e domingo entre as datas informadas
+      const autoWeekendDays = [];
+      let currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        const dayOfWeek = currentDate.getDay(); // 0 = Domingo, 6 = Sábado
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          autoWeekendDays.push(currentDate.toISOString().split('T')[0]);
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      // Substitui os dias não úteis pelos finais de semana calculados
+      nonWorkingDays = autoWeekendDays;
+      renderNonWorkingDaysList();
+    }
+
+    // Listeners para alteração das datas da sprint
+    document.getElementById('sprintStartDate').addEventListener('change', updateNonWorkingDaysFromDates);
+    document.getElementById('sprintEndDate').addEventListener('change', updateNonWorkingDaysFromDates);
+
+    // Listener para adicionar um dia não útil manualmente
+    document.getElementById('addNonWorkingDay').addEventListener('click', () => {
+      const input = document.getElementById('nonWorkingDayInput');
+      const date = input.value;
+      if (date && !nonWorkingDays.includes(date)) {
+        nonWorkingDays.push(date);
+        renderNonWorkingDaysList();
+        input.value = '';
+      }
+    });
+
     /* Função para adicionar uma linha em uma tabela de configuração (para classificações, maturidade e SP/Horas) */
     function addRowToTable(tableId, defaultValues) {
       const tbody = document.querySelector("#" + tableId + " tbody");
@@ -296,7 +394,7 @@
       createDeveloperCard();
     });
 
-    /* --- Cálculo da Capacidade ---  
+    /* --- Cálculo da Capacidade ---
        A função abaixo implementa a lógica da macro em VB:
        
        Para as horas disponíveis (horaAtual), enquanto for maior que 0:
