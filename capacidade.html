@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,20 +12,20 @@
     }
   </style>
 </head>
-
 <body>
   <div class="container my-4">
     <h1 class="mb-4">Calculadora de Capacidade Scrum</h1>
-
-    <!-- Informações da Sprint -->
+    
+    <!-- Informações da Sprint (dados, parâmetros, dias não úteis e eventos) -->
     <div class="card mb-3">
       <div class="card-header">Informações da Sprint</div>
       <div class="card-body">
+        <!-- Dados da Sprint -->
         <div class="mb-3">
           <label for="sprintTitle" class="form-label">Título da Sprint</label>
           <input type="text" id="sprintTitle" class="form-control" placeholder="Digite o título da sprint">
         </div>
-        <div class="row g-3">
+        <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label for="sprintStartDate" class="form-label">Data de Início</label>
             <input type="date" id="sprintStartDate" class="form-control">
@@ -36,14 +35,8 @@
             <input type="date" id="sprintEndDate" class="form-control">
           </div>
         </div>
-        <small class="text-muted">Alterar as datas da sprint recalcula automaticamente os dias não úteis para os fins de semana padrão.</small>
-      </div>
-    </div>
-
-    <!-- Parâmetros da Sprint -->
-    <div class="card mb-3">
-      <div class="card-header">Parâmetros da Sprint</div>
-      <div class="card-body">
+        
+        <!-- Parâmetros da Sprint -->
         <div class="row g-3 mb-3">
           <div class="col-md-4">
             <label for="totalHorasSprint" class="form-label">Horas Úteis Totais da Sprint</label>
@@ -59,8 +52,8 @@
           </div>
         </div>
         <small class="text-muted d-block mb-3">Ex.: 80 horas com 85% de aproveitamento → 68 horas úteis.</small>
-
-        <!-- Seção Dias Não Úteis -->
+        
+        <!-- Dias Não Úteis -->
         <div class="mb-3">
           <h5>Dias Não Úteis</h5>
           <p class="text-muted">Os finais de semana serão adicionados automaticamente. Remova um dia para torná-lo trabalhável ou adicione manualmente outros dias não úteis.</p>
@@ -72,12 +65,34 @@
             <!-- Lista de dias não úteis -->
           </ul>
         </div>
+        
+        <!-- Eventos da Sprint -->
+        <div class="mb-3">
+          <h5>Eventos da Sprint</h5>
+          <p class="text-muted">Informe os eventos relevantes ocorridos na sprint.</p>
+          <table class="table table-bordered" id="eventosTable">
+            <thead>
+              <tr>
+                <th>Tipo de Evento</th>
+                <th>Descrição</th>
+                <th>Data de Ocorrência</th>
+                <th>Tempo Gasto (min)</th>
+                <th>Recorrente</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Linhas de eventos serão adicionadas dinamicamente -->
+            </tbody>
+          </table>
+          <button id="addEvento" class="btn btn-primary btn-sm">Adicionar Evento</button>
+        </div>
       </div>
     </div>
-
-    <!-- Abas: Desenvolvedores (primeira e padrão) e Configurações Globais -->
+    
+    <!-- Abas: Desenvolvedores (padrão) e Configurações Globais -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <!-- Aba Desenvolvedores: ficará à esquerda e é a padrão -->
+      <!-- Aba Desenvolvedores -->
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="dev-tab" data-bs-toggle="tab" data-bs-target="#dev" type="button" role="tab"
           aria-controls="dev" aria-selected="true">
@@ -159,13 +174,13 @@
         </div>
       </div>
     </div>
-
+    
     <!-- Botão de Cálculo e exibição do Resultado Total -->
     <div class="mb-3 mt-3">
       <button id="calcularBtn" class="btn btn-success">Calcular Capacidade</button>
     </div>
   </div>
-
+  
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -301,6 +316,45 @@
         }
       });
     }
+
+    /* Função para adicionar uma linha de evento na tabela de Eventos da Sprint */
+    function addEventRow(defaultValues) {
+      const tbody = document.querySelector("#eventosTable tbody");
+      const tr = document.createElement('tr');
+      // defaultValues: [tipo, descrição, data, tempo, recorrente]
+      const tipoDefault = defaultValues && defaultValues[0] ? defaultValues[0] : "Planning";
+      const descricaoDefault = defaultValues && defaultValues[1] ? defaultValues[1] : "";
+      const dataDefault = defaultValues && defaultValues[2] ? defaultValues[2] : "";
+      const tempoDefault = defaultValues && defaultValues[3] ? defaultValues[3] : "";
+      const recorrenteDefault = defaultValues && defaultValues[4] ? "checked" : "";
+      
+      tr.innerHTML = `
+        <td>
+          <select class="form-select event-type">
+            <option value="Planning" ${tipoDefault === "Planning" ? "selected" : ""}>Planning</option>
+            <option value="Refinamento" ${tipoDefault === "Refinamento" ? "selected" : ""}>Refinamento</option>
+            <option value="Review" ${tipoDefault === "Review" ? "selected" : ""}>Review</option>
+            <option value="Retrospectiva" ${tipoDefault === "Retrospectiva" ? "selected" : ""}>Retrospectiva</option>
+            <option value="Daily" ${tipoDefault === "Daily" ? "selected" : ""}>Daily</option>
+            <option value="Outros" ${tipoDefault === "Outros" ? "selected" : ""}>Outros</option>
+          </select>
+        </td>
+        <td><input type="text" class="form-control event-description" value="${descricaoDefault}"></td>
+        <td><input type="date" class="form-control event-date" value="${dataDefault}"></td>
+        <td><input type="number" class="form-control event-duration" value="${tempoDefault}" min="0"></td>
+        <td class="text-center"><input type="checkbox" class="form-check-input event-recurring" ${recorrenteDefault}></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-event">Remover</button></td>
+      `;
+      tbody.appendChild(tr);
+      tr.querySelector('.remove-event').addEventListener('click', function () {
+        tr.remove();
+      });
+    }
+
+    // Listener para adicionar um novo evento
+    document.getElementById('addEvento').addEventListener('click', function () {
+      addEventRow();
+    });
 
     /* Popula os cadastros globais com alguns valores padrão */
     document.addEventListener('DOMContentLoaded', function () {
@@ -475,5 +529,4 @@
     });
   </script>
 </body>
-
 </html>
