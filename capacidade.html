@@ -92,13 +92,13 @@
       </div>
     </div>
     
-    <!-- Abas: Desenvolvedores (padrão) e Configurações Globais -->
+    <!-- Abas: Time (padrão) e Configurações Globais -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <!-- Aba Desenvolvedores -->
+      <!-- Aba Time -->
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="dev-tab" data-bs-toggle="tab" data-bs-target="#dev" type="button" role="tab"
           aria-controls="dev" aria-selected="true">
-          Desenvolvedores
+          Time
         </button>
       </li>
       <!-- Aba Configurações Globais -->
@@ -110,14 +110,14 @@
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
-      <!-- Aba Desenvolvedores -->
+      <!-- Aba Time -->
       <div class="tab-pane fade show active" id="dev" role="tabpanel" aria-labelledby="dev-tab">
         <div class="card mt-3">
           <div class="card-body">
             <div id="developersContainer">
-              <!-- Cards de desenvolvedor serão inseridos aqui -->
+              <!-- Cards de membro serão inseridos aqui -->
             </div>
-            <button id="addDeveloper" class="btn btn-primary">Adicionar Desenvolvedor</button>
+            <button id="addDeveloper" class="btn btn-primary">Adicionar Membro</button>
           </div>
         </div>
       </div>
@@ -176,7 +176,23 @@
                 <!-- Linhas adicionadas dinamicamente -->
               </tbody>
             </table>
-            <button id="addSPHoras" class="btn btn-primary btn-sm">Adicionar Relação</button>
+            <button id="addSPHoras" class="btn btn-primary btn-sm mb-3">Adicionar Relação</button>
+            
+            <!-- 2.4 Tipos de Membro -->
+            <h5 class="section-title">Tipos de Membro</h5>
+            <table class="table table-bordered" id="tipoTable">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Considerar na Capacidade</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Linhas adicionadas dinamicamente -->
+              </tbody>
+            </table>
+            <button id="addTipo" class="btn btn-primary btn-sm">Adicionar Tipo</button>
           </div>
         </div>
       </div>
@@ -194,7 +210,7 @@
     // Array global para armazenar os dias não úteis (formato YYYY-MM-DD)
     let nonWorkingDays = [];
 
-    // Renderiza a lista de dias não úteis
+    // Renderiza a lista de dias não úteis e atualiza as horas úteis
     function renderNonWorkingDaysList() {
       const list = document.getElementById('nonWorkingDaysList');
       list.innerHTML = '';
@@ -209,10 +225,12 @@
         btn.addEventListener('click', () => {
           nonWorkingDays = nonWorkingDays.filter(d => d !== date);
           renderNonWorkingDaysList();
+          updateSprintEffectiveHours();
         });
         li.appendChild(btn);
         list.appendChild(li);
       });
+      updateSprintEffectiveHours();
     }
 
     // Atualiza os dias não úteis com base nas datas da sprint (adiciona finais de semana automaticamente)
@@ -236,6 +254,7 @@
       }
       nonWorkingDays = autoWeekendDays;
       renderNonWorkingDaysList();
+      updateSprintEffectiveHours();
     }
 
     document.getElementById('sprintStartDate').addEventListener('change', updateNonWorkingDaysFromDates);
@@ -315,6 +334,63 @@
       });
     }
 
+    // Função para gerenciar a tabela de Tipos de Membro
+    function addTipoRow(defaultValues) {
+      const tbody = document.querySelector("#tipoTable tbody");
+      const tr = document.createElement('tr');
+      const typeName = defaultValues[0] || '';
+      // defaultValues[1] deve ser booleano; se não definido, considera true
+      const considerFlag = (defaultValues[1] !== undefined) ? defaultValues[1] : true;
+      tr.innerHTML = `
+        <td><input type="text" class="form-control tipo-name" value="${typeName}"></td>
+        <td class="text-center"><input type="checkbox" class="form-check-input tipo-consider" ${considerFlag ? 'checked' : ''}></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-tipo">Remover</button></td>
+      `;
+      tbody.appendChild(tr);
+      tr.querySelector('.remove-tipo').addEventListener('click', function(){
+        tr.remove();
+        updateTipoDropdowns();
+      });
+      updateTipoDropdowns();
+    }
+
+    function updateTipoDropdowns() {
+      const tipos = [];
+      document.querySelectorAll("#tipoTable tbody tr").forEach(tr => {
+        const nome = tr.querySelector('.tipo-name').value;
+        const consider = tr.querySelector('.tipo-consider').checked;
+        if (nome.trim() !== "") {
+          tipos.push({ name: nome, consider: consider });
+        }
+      });
+      document.querySelectorAll('.dev-tipo').forEach(select => {
+        const currentValue = select.value;
+        select.innerHTML = "";
+        tipos.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item.name;
+          option.textContent = item.name + (item.consider ? " (Contabilizar na Capacidade)" : " (Não Contabilizar na Capacidade)");
+          select.appendChild(option);
+        });
+        if (Array.from(select.options).some(opt => opt.value === currentValue)) {
+          select.value = currentValue;
+        }
+      });
+    }
+
+    // Retorna um mapeamento dos tipos: { nome: considerFlag }
+    function getTipoMapping() {
+      const mapping = {};
+      document.querySelectorAll("#tipoTable tbody tr").forEach(tr => {
+        const nome = tr.querySelector('.tipo-name').value;
+        const consider = tr.querySelector('.tipo-consider').checked;
+        if (nome.trim() !== "") {
+          mapping[nome] = consider;
+        }
+      });
+      return mapping;
+    }
+
     function addEventRow(defaultValues) {
       const tbody = document.querySelector("#eventosTable tbody");
       const tr = document.createElement('tr');
@@ -342,8 +418,13 @@
         <td><button type="button" class="btn btn-danger btn-sm remove-event">Remover</button></td>
       `;
       tbody.appendChild(tr);
+      // Atualiza as horas úteis sempre que os dados do evento mudarem
+      tr.querySelectorAll('.event-date, .event-duration, .event-recurring').forEach(input => {
+        input.addEventListener('change', updateSprintEffectiveHours);
+      });
       tr.querySelector('.remove-event').addEventListener('click', function () {
         tr.remove();
+        updateSprintEffectiveHours();
       });
     }
 
@@ -403,8 +484,60 @@
     // Recalcular quando o parâmetro de horas diárias mudar
     document.getElementById('dailyWorkHours').addEventListener('change', updateSprintEffectiveHours);
     
-    /* Popula os cadastros globais com valores padrão */
+    /* Seção Time (Membros) */
+    let developerCount = 0;
+    function createDeveloperCard() {
+      developerCount++;
+      const card = document.createElement('div');
+      card.className = "card mb-3";
+      card.innerHTML = `
+        <div class="card-header">
+          Membro ${developerCount}
+          <button type="button" class="btn-close float-end remove-developer" aria-label="Remover"></button>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control dev-name" placeholder="Nome do Membro">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <select class="form-select dev-tipo"></select>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Classificação</label>
+              <select class="form-select dev-classificacao"></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Maturidade</label>
+              <select class="form-select dev-maturidade"></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Taxa de Disponibilidade (%)</label>
+              <input type="number" class="form-control dev-disponibilidade" value="100" min="0" max="100">
+            </div>
+          </div>
+          <div class="mt-3">
+            <label class="form-label">Capacidade do Membro (SP)</label>
+            <input type="text" class="form-control dev-capacidade" value="0" readonly>
+          </div>
+        </div>
+      `;
+      document.getElementById('developersContainer').appendChild(card);
+      card.querySelector('.remove-developer').addEventListener('click', function () {
+        card.remove();
+      });
+      updateDeveloperDropdowns();
+      updateTipoDropdowns();
+    }
+
+    document.getElementById('addDeveloper').addEventListener('click', function () {
+      createDeveloperCard();
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
+      // Popula as tabelas de configuração com valores padrão
       addRowToTable("classificacaoTable", ["Sênior", "100"]);
       addRowToTable("classificacaoTable", ["Sênior-Pleno", "85"]);
       addRowToTable("classificacaoTable", ["Pleno", "70"]);
@@ -425,6 +558,13 @@
       addRowToTable("spHorasTable", ["0", "0"]);
 
       updateDeveloperDropdowns();
+
+      // Tipos de Membro pré cadastrados
+      addTipoRow(["Desenvolvedor", true]);
+      addTipoRow(["Tester", false]);
+
+      // Cria o primeiro membro automaticamente
+      createDeveloperCard();
     });
 
     document.getElementById('addClassificacao').addEventListener('click', function () {
@@ -436,56 +576,8 @@
     document.getElementById('addSPHoras').addEventListener('click', function () {
       addRowToTable("spHorasTable", ["", ""]);
     });
-
-    /* Seção Desenvolvedores */
-    let developerCount = 0;
-    function createDeveloperCard() {
-      developerCount++;
-      const card = document.createElement('div');
-      card.className = "card mb-3";
-      card.innerHTML = `
-        <div class="card-header">
-          Desenvolvedor ${developerCount}
-          <button type="button" class="btn-close float-end remove-developer" aria-label="Remover"></button>
-        </div>
-        <div class="card-body">
-          <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text" class="form-control dev-name" placeholder="Nome do Desenvolvedor">
-          </div>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Classificação</label>
-              <select class="form-select dev-classificacao"></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Maturidade</label>
-              <select class="form-select dev-maturidade"></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Taxa de Disponibilidade (%)</label>
-              <input type="number" class="form-control dev-disponibilidade" value="100" min="0" max="100">
-            </div>
-          </div>
-          <div class="mt-3">
-            <label class="form-label">Capacidade do Desenvolvedor (SP)</label>
-            <input type="text" class="form-control dev-capacidade" value="0" readonly>
-          </div>
-        </div>
-      `;
-      document.getElementById('developersContainer').appendChild(card);
-      card.querySelector('.remove-developer').addEventListener('click', function () {
-        card.remove();
-      });
-      updateDeveloperDropdowns();
-    }
-
-    document.getElementById('addDeveloper').addEventListener('click', function () {
-      createDeveloperCard();
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      createDeveloperCard();
+    document.getElementById('addTipo').addEventListener('click', function () {
+      addTipoRow(["", true]);
     });
 
     /* Cálculo da Capacidade */
@@ -537,12 +629,18 @@
       });
 
       let totalTeamCapacity = 0;
+      const tipoMapping = getTipoMapping();
       document.querySelectorAll('#developersContainer .card').forEach(card => {
         const disponibilidade = parseFloat(card.querySelector('.dev-disponibilidade').value) || 100;
         const classificacaoRate = parseFloat(card.querySelector('.dev-classificacao').value) || 100;
         const maturidadeRate = parseFloat(card.querySelector('.dev-maturidade').value) || 100;
         const devEffectiveHours = sprintEffectiveHours * (disponibilidade / 100) * (classificacaoRate / 100) * (maturidadeRate / 100);
-        const devCapacity = calcularCapacidadePorDev(devEffectiveHours, spMapping);
+        let devCapacity = calcularCapacidadePorDev(devEffectiveHours, spMapping);
+        const tipoSelect = card.querySelector('.dev-tipo');
+        const selectedTipo = tipoSelect ? tipoSelect.value : "";
+        if (tipoMapping[selectedTipo] === false) {
+          devCapacity = 0;
+        }
         totalTeamCapacity += devCapacity;
         card.querySelector('.dev-capacidade').value = devCapacity.toFixed(2);
       });
