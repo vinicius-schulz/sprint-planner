@@ -39,7 +39,7 @@
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label for="totalHorasSprint" class="form-label">Horas Úteis Totais da Sprint</label>
-            <input type="number" id="totalHorasSprint" class="form-control" value="0" readonly>
+            <input type="text" id="totalHorasSprint" class="form-control" value="0" readonly>
           </div>
           <div class="col-md-6">
             <label class="form-label">Capacidade Total (SP)</label>
@@ -79,7 +79,7 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Linhas de eventos serão adicionadas dinamicamente -->
+              <!-- Linhas de eventos serão inseridas dinamicamente -->
             </tbody>
           </table>
           <button id="addEvento" class="btn btn-primary btn-sm">Adicionar Evento</button>
@@ -175,12 +175,7 @@
       </div>
     </div>
 
-    <!-- Botão de Cálculo -->
-    <div class="mb-3 mt-3">
-      <button id="calcularBtn" class="btn btn-success">Calcular Capacidade</button>
-    </div>
-
-    <!-- Lista de Tarefas -->
+    <!-- A lista de tarefas permanece -->
     <div class="card mb-3">
       <div class="card-header">Lista de Tarefas</div>
       <div class="card-body">
@@ -422,7 +417,9 @@
       `;
       tbody.appendChild(tr);
       tr.querySelectorAll('.event-date, .event-duration, .event-recurring').forEach(input => {
-        input.addEventListener('change', updateSprintEffectiveHours);
+        input.addEventListener('change', () => {
+          updateSprintEffectiveHours();
+        });
       });
       tr.querySelector('.remove-event').addEventListener('click', function () {
         tr.remove();
@@ -475,100 +472,17 @@
       return effectiveHours > 0 ? effectiveHours : 0;
     }
 
+    // Atualiza as horas úteis e chama o cálculo da capacidade
     function updateSprintEffectiveHours() {
       const effectiveHours = calculateTotalWorkingHours();
-      document.getElementById('totalHorasSprint').value = effectiveHours.toFixed(2);
+      document.getElementById('totalHorasSprint').value = effectiveHours.toFixed(2).replace('.', ',');
+      updateCapacity();
     }
 
     document.getElementById('dailyWorkHours').addEventListener('change', updateSprintEffectiveHours);
 
-    let developerCount = 0;
-    function createDeveloperCard() {
-      developerCount++;
-      const card = document.createElement('div');
-      card.className = "card mb-3";
-      card.innerHTML = `
-        <div class="card-header">
-          Membro ${developerCount}
-          <button type="button" class="btn-close float-end remove-developer" aria-label="Remover"></button>
-        </div>
-        <div class="card-body">
-          <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text" class="form-control dev-name" placeholder="Nome do Membro">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Tipo</label>
-            <select class="form-select dev-tipo"></select>
-          </div>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Classificação</label>
-              <select class="form-select dev-classificacao"></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Maturidade</label>
-              <select class="form-select dev-maturidade"></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Taxa de Disponibilidade (%)</label>
-              <input type="number" class="form-control dev-disponibilidade" value="100" min="0" max="100">
-            </div>
-          </div>
-          <div class="mt-3">
-            <label class="form-label">Capacidade do Membro (SP)</label>
-            <input type="text" class="form-control dev-capacidade" value="0" readonly>
-          </div>
-        </div>
-      `;
-      document.getElementById('developersContainer').appendChild(card);
-      card.querySelector('.remove-developer').addEventListener('click', function () {
-        card.remove();
-      });
-      updateDeveloperDropdowns();
-      updateTipoDropdowns();
-    }
-
-    document.getElementById('addDeveloper').addEventListener('click', function () {
-      createDeveloperCard();
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      addRowToTable("classificacaoTable", ["Sênior", "100"]);
-      addRowToTable("classificacaoTable", ["Sênior-Pleno", "85"]);
-      addRowToTable("classificacaoTable", ["Pleno", "70"]);
-      addRowToTable("classificacaoTable", ["Júnior-Pleno", "65"]);
-      addRowToTable("classificacaoTable", ["Júnior", "50"]);
-      addRowToTable("classificacaoTable", ["Estagiário", "35"]);
-      addRowToTable("maturidadeTable", ["Plena", "100"]);
-      addRowToTable("maturidadeTable", ["Mediana", "80"]);
-      addRowToTable("maturidadeTable", ["Inicial", "60"]);
-      addRowToTable("spHorasTable", ["13", "39"]);
-      addRowToTable("spHorasTable", ["8", "24"]);
-      addRowToTable("spHorasTable", ["5", "15"]);
-      addRowToTable("spHorasTable", ["3", "9"]);
-      addRowToTable("spHorasTable", ["2", "6"]);
-      addRowToTable("spHorasTable", ["1", "3"]);
-      addRowToTable("spHorasTable", ["0", "0"]);
-      updateDeveloperDropdowns();
-      addTipoRow(["Desenvolvedor", true]);
-      addTipoRow(["Tester", false]);
-      createDeveloperCard();
-    });
-
-    document.getElementById('addClassificacao').addEventListener('click', function () {
-      addRowToTable("classificacaoTable", ["", ""]);
-    });
-    document.getElementById('addMaturidade').addEventListener('click', function () {
-      addRowToTable("maturidadeTable", ["", ""]);
-    });
-    document.getElementById('addSPHoras').addEventListener('click', function () {
-      addRowToTable("spHorasTable", ["", ""]);
-    });
-    document.getElementById('addTipo').addEventListener('click', function () {
-      addTipoRow(["", true]);
-    });
-
+    /***************** Função para calcular a capacidade de cada membro *****************/
+    // Função definida para converter horas disponíveis e mapeamento de SP para capacidade (SP)
     function calcularCapacidadePorDev(availableHours, spMapping) {
       let capacity = 0;
       let horaAtual = availableHours;
@@ -602,9 +516,11 @@
       return capacity;
     }
 
-    document.getElementById('calcularBtn').addEventListener('click', function () {
+    // Atualiza a capacidade dos membros e da sprint com formatação
+    function updateCapacity() {
       const sprintEffectiveHours = calculateTotalWorkingHours();
-      document.getElementById('totalHorasSprint').value = sprintEffectiveHours.toFixed(2);
+      document.getElementById('totalHorasSprint').value = sprintEffectiveHours.toFixed(2).replace('.', ',');
+      
       let spMapping = [];
       document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
         const sp = tr.querySelector('.campo1').value;
@@ -627,12 +543,25 @@
           devCapacity = 0;
         }
         totalTeamCapacity += devCapacity;
-        card.querySelector('.dev-capacidade').value = devCapacity.toFixed(2);
+        card.querySelector('.dev-capacidade').value = devCapacity.toFixed(2).replace('.', ',');
       });
-      document.getElementById('totalCapacityDisplay').value = totalTeamCapacity.toFixed(2);
+      document.getElementById('totalCapacityDisplay').value = totalTeamCapacity.toFixed(2).replace('.', ',');
+    }
+
+    // Atualiza capacidade ao alterar campos específicos
+    document.addEventListener("input", function(e) {
+      if (
+        e.target.classList.contains("dev-disponibilidade") ||
+        e.target.classList.contains("dev-classificacao") ||
+        e.target.classList.contains("dev-maturidade") ||
+        e.target.classList.contains("campo1") ||
+        e.target.classList.contains("campo2")
+      ) {
+        updateCapacity();
+      }
     });
 
-    /* Seção Tarefas */
+    /***************** Seção Tarefas *****************/
     function updateTaskResourceDropdowns() {
       const devNames = [];
       document.querySelectorAll("#developersContainer .dev-name").forEach(input => {
@@ -1068,6 +997,7 @@
         devContainer.appendChild(card);
         card.querySelector('.remove-developer').addEventListener('click', function () {
           card.remove();
+          updateCapacity();
         });
       });
       updateDeveloperDropdowns();
