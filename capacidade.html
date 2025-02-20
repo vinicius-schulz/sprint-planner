@@ -1038,8 +1038,6 @@
           removeDependencyFromTasks(removedId);
         });
       });
-      updateTaskResourceDropdowns();
-      updateTaskSPOptions();
 
       document.getElementById("dailyWorkHours").value = data.globalSettings.dailyWorkHours || 8;
 
@@ -1066,6 +1064,9 @@
       (data.globalSettings.tipos || []).forEach(item => {
         addTipoRow([item.tipo, item.consider]);
       });
+
+      updateTaskResourceDropdowns();
+      updateTaskSPOptions();
 
       updateSprintEffectiveHours();
     }

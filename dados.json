@@ -64,7 +64,7 @@
     {
       "name": "Flavia",
       "tipo": "Desenvolvedor",
-      "classificacao": "70",
+      "classificacao": "100",
       "maturidade": "100",
       "disponibilidade": "90"
     }
@@ -74,7 +74,7 @@
       "id": "1",
       "name": "Tarefa 1",
       "resource": "Vinicius",
-      "sp": "8",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-16",
       "endDate": "2025-02-18"
@@ -82,8 +82,8 @@
     {
       "id": "2",
       "name": "Tarefa 2",
-      "resource": "Vinicius",
-      "sp": "5",
+      "resource": "",
+      "sp": "8",
       "dependencies": "",
       "startDate": "2025-02-19",
       "endDate": "2025-02-20"
@@ -91,8 +91,8 @@
     {
       "id": "3",
       "name": "Tarefa 3",
-      "resource": "Matheus",
-      "sp": "13",
+      "resource": "",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-16",
       "endDate": "2025-02-20"
@@ -100,8 +100,8 @@
     {
       "id": "4",
       "name": "Tarefa 4",
-      "resource": "Flavia",
-      "sp": "8",
+      "resource": "",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-16",
       "endDate": "2025-02-18"
@@ -109,8 +109,8 @@
     {
       "id": "5",
       "name": "Tarefa 5",
-      "resource": "Flavia",
-      "sp": "5",
+      "resource": "",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-19",
       "endDate": "2025-02-20"
@@ -118,8 +118,8 @@
     {
       "id": "6",
       "name": "Tarefa 6",
-      "resource": "Flavia",
-      "sp": "3",
+      "resource": "",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-21",
       "endDate": "2025-02-24"
@@ -127,8 +127,8 @@
     {
       "id": "7",
       "name": "Tarefa 7",
-      "resource": "Matheus",
-      "sp": "5",
+      "resource": "",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-21",
       "endDate": "2025-02-24"
@@ -136,8 +136,8 @@
     {
       "id": "8",
       "name": "Tarefa 8",
-      "resource": "Matheus",
-      "sp": "2",
+      "resource": "",
+      "sp": "",
       "dependencies": "",
       "startDate": "2025-02-25",
       "endDate": "2025-02-25"
