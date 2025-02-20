@@ -18,11 +18,10 @@
   <div class="container my-4">
     <h1 class="mb-4">Calculadora de Capacidade Scrum</h1>
 
-    <!-- Informações da Sprint (dados, parâmetros, dias não úteis e eventos) -->
+    <!-- Informações da Sprint -->
     <div class="card mb-3">
       <div class="card-header">Informações da Sprint</div>
       <div class="card-body">
-        <!-- Dados da Sprint -->
         <div class="mb-3">
           <label for="sprintTitle" class="form-label">Título da Sprint</label>
           <input type="text" id="sprintTitle" class="form-control" placeholder="Digite o título da sprint">
@@ -37,8 +36,6 @@
             <input type="date" id="sprintEndDate" class="form-control">
           </div>
         </div>
-
-        <!-- Parâmetros da Sprint -->
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label for="totalHorasSprint" class="form-label">Horas Úteis Totais da Sprint</label>
@@ -50,16 +47,13 @@
           </div>
         </div>
         <small class="text-muted d-block mb-3">
-          Horas úteis calculadas com base na data de início, data de fim, dias não úteis, eventos da sprint e horas
-          diárias de trabalho.
+          Horas úteis calculadas com base na data de início, data de fim, dias não úteis, eventos da sprint e horas diárias.
         </small>
-
         <!-- Dias Não Úteis -->
         <div class="mb-3">
           <h5>Dias Não Úteis</h5>
           <p class="text-muted">
-            Os finais de semana serão adicionados automaticamente. Remova um dia para torná-lo trabalhável ou adicione
-            manualmente outros dias não úteis.
+            Os finais de semana serão adicionados automaticamente. Remova ou adicione outros dias não úteis.
           </p>
           <div class="input-group mb-3">
             <input type="date" id="nonWorkingDayInput" class="form-control">
@@ -69,13 +63,10 @@
             <!-- Lista de dias não úteis -->
           </ul>
         </div>
-
         <!-- Eventos da Sprint -->
         <div class="mb-3">
           <h5>Eventos da Sprint</h5>
-          <p class="text-muted">
-            Informe os eventos relevantes ocorridos na sprint.
-          </p>
+          <p class="text-muted">Informe os eventos relevantes ocorridos na sprint.</p>
           <table class="table table-bordered" id="eventosTable">
             <thead>
               <tr>
@@ -96,21 +87,15 @@
       </div>
     </div>
 
-    <!-- Abas: Time (padrão) e Configurações Globais -->
+    <!-- Abas: Time e Configurações Globais -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <!-- Aba Time -->
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="dev-tab" data-bs-toggle="tab" data-bs-target="#dev" type="button" role="tab"
-          aria-controls="dev" aria-selected="true">
-          Time
-        </button>
+          aria-controls="dev" aria-selected="true">Time</button>
       </li>
-      <!-- Aba Configurações Globais -->
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab"
-          aria-controls="config" aria-selected="false">
-          Configurações Globais
-        </button>
+          aria-controls="config" aria-selected="false">Configurações Globais</button>
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
@@ -129,12 +114,11 @@
       <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
         <div class="card mt-3">
           <div class="card-body">
-            <!-- Novo parâmetro: Horas Diárias para Trabalho -->
             <div class="mb-3">
               <label for="dailyWorkHours" class="form-label">Horas Diárias para Trabalho</label>
               <input type="number" id="dailyWorkHours" class="form-control" value="8" min="0">
             </div>
-            <!-- 2.1 Classificações de Desenvolvedor -->
+            <!-- Classificações de Desenvolvedor -->
             <h5 class="section-title">Classificações de Desenvolvedor</h5>
             <table class="table table-bordered" id="classificacaoTable">
               <thead>
@@ -144,13 +128,10 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Linhas adicionadas dinamicamente -->
-              </tbody>
+              <tbody></tbody>
             </table>
             <button id="addClassificacao" class="btn btn-primary btn-sm mb-3">Adicionar Classificação</button>
-
-            <!-- 2.2 Níveis de Maturidade -->
+            <!-- Níveis de Maturidade -->
             <h5 class="section-title">Maturidade no Projeto</h5>
             <table class="table table-bordered" id="maturidadeTable">
               <thead>
@@ -160,13 +141,10 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Linhas adicionadas dinamicamente -->
-              </tbody>
+              <tbody></tbody>
             </table>
             <button id="addMaturidade" class="btn btn-primary btn-sm mb-3">Adicionar Nível de Maturidade</button>
-
-            <!-- 2.3 Relação Story Points / Horas -->
+            <!-- Relação Story Points / Horas -->
             <h5 class="section-title">Relação Story Points / Horas</h5>
             <table class="table table-bordered" id="spHorasTable">
               <thead>
@@ -176,13 +154,10 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Linhas adicionadas dinamicamente -->
-              </tbody>
+              <tbody></tbody>
             </table>
             <button id="addSPHoras" class="btn btn-primary btn-sm mb-3">Adicionar Relação</button>
-
-            <!-- 2.4 Tipos de Membro -->
+            <!-- Tipos de Membro -->
             <h5 class="section-title">Tipos de Membro</h5>
             <table class="table table-bordered" id="tipoTable">
               <thead>
@@ -192,9 +167,7 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Linhas adicionadas dinamicamente -->
-              </tbody>
+              <tbody></tbody>
             </table>
             <button id="addTipo" class="btn btn-primary btn-sm">Adicionar Tipo</button>
           </div>
@@ -202,12 +175,12 @@
       </div>
     </div>
 
-    <!-- Botão de Cálculo e exibição do Resultado Total -->
+    <!-- Botão de Cálculo -->
     <div class="mb-3 mt-3">
       <button id="calcularBtn" class="btn btn-success">Calcular Capacidade</button>
     </div>
 
-    <!-- Nova Área: Lista de Tarefas -->
+    <!-- Lista de Tarefas -->
     <div class="card mb-3">
       <div class="card-header">Lista de Tarefas</div>
       <div class="card-body">
@@ -234,13 +207,22 @@
     </div>
   </div>
 
+  <!-- Área de Exportação/Importação e exibição da versão -->
+  <div class="container my-4">
+    <button id="exportBtn" class="btn btn-secondary">Exportar Dados</button>
+    <button id="importBtn" class="btn btn-secondary">Importar Dados</button>
+    <input type="file" id="importFileInput" style="display: none;" accept="application/json" />
+    <div class="mt-2">
+      <small>Versão: <span id="appVersionDisplay"></span></small>
+    </div>
+  </div>
+
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Array global para armazenar os dias não úteis (formato YYYY-MM-DD)
+    /*********************** Funcionalidades Básicas ************************/
     let nonWorkingDays = [];
 
-    // Renderiza a lista de dias não úteis e atualiza as horas úteis
     function renderNonWorkingDaysList() {
       const list = document.getElementById('nonWorkingDaysList');
       list.innerHTML = '';
@@ -263,18 +245,15 @@
       updateSprintEffectiveHours();
     }
 
-    // Atualiza os dias não úteis com base nas datas da sprint (adiciona finais de semana automaticamente)
     function updateNonWorkingDaysFromDates() {
       const startDateStr = document.getElementById('sprintStartDate').value;
       const endDateStr = document.getElementById('sprintEndDate').value;
       if (!startDateStr || !endDateStr) return;
-
       const [startYear, startMonth, startDay] = startDateStr.split("-");
       const startDate = new Date(startYear, startMonth - 1, startDay);
       const [endYear, endMonth, endDay] = endDateStr.split("-");
       const endDate = new Date(endYear, endMonth - 1, endDay);
       if (startDate > endDate) return;
-
       const autoWeekendDays = [];
       let currentDate = new Date(startDate);
       while (currentDate <= endDate) {
@@ -291,7 +270,6 @@
 
     document.getElementById('sprintStartDate').addEventListener('change', updateNonWorkingDaysFromDates);
     document.getElementById('sprintEndDate').addEventListener('change', updateNonWorkingDaysFromDates);
-
     document.getElementById('addNonWorkingDay').addEventListener('click', () => {
       const input = document.getElementById('nonWorkingDayInput');
       const date = input.value;
@@ -302,7 +280,6 @@
       }
     });
 
-    /* Função para adicionar uma linha nas tabelas de configuração (classificações, maturidade, SP/Horas) */
     function addRowToTable(tableId, defaultValues) {
       const tbody = document.querySelector("#" + tableId + " tbody");
       const tr = document.createElement('tr');
@@ -336,9 +313,8 @@
           maturidades.push({ name: nivel, rate: taxa });
         }
       });
-
       document.querySelectorAll('.dev-classificacao').forEach(select => {
-        const currentValue = select.value; // armazena o valor atual
+        const currentValue = select.value;
         select.innerHTML = "";
         classificacoes.forEach(item => {
           const option = document.createElement('option');
@@ -350,7 +326,6 @@
           select.value = currentValue;
         }
       });
-
       document.querySelectorAll('.dev-maturidade').forEach(select => {
         const currentValue = select.value;
         select.innerHTML = "";
@@ -366,7 +341,6 @@
       });
     }
 
-    // Função para gerenciar a tabela de Tipos de Membro
     function addTipoRow(defaultValues) {
       const tbody = document.querySelector("#tipoTable tbody");
       const tr = document.createElement('tr');
@@ -409,7 +383,6 @@
       });
     }
 
-    // Retorna um mapeamento dos tipos: { nome: considerFlag }
     function getTipoMapping() {
       const mapping = {};
       document.querySelectorAll("#tipoTable tbody tr").forEach(tr => {
@@ -430,7 +403,6 @@
       const dataDefault = defaultValues && defaultValues[2] ? defaultValues[2] : "";
       const tempoDefault = defaultValues && defaultValues[3] ? defaultValues[3] : "";
       const recorrenteDefault = defaultValues && defaultValues[4] ? "checked" : "";
-
       tr.innerHTML = `
         <td>
           <select class="form-select event-type">
@@ -462,7 +434,6 @@
       addEventRow();
     });
 
-    // Função que calcula as Horas Úteis Totais da Sprint
     function calculateTotalWorkingHours() {
       const startDateStr = document.getElementById('sprintStartDate').value;
       const endDateStr = document.getElementById('sprintEndDate').value;
@@ -472,7 +443,6 @@
       const [endYear, endMonth, endDay] = endDateStr.split("-");
       const endDate = new Date(endYear, endMonth - 1, endDay);
       if (startDate > endDate) return 0;
-
       let workingDays = 0;
       let currentDate = new Date(startDate);
       while (currentDate <= endDate) {
@@ -484,8 +454,6 @@
       }
       const dailyHours = parseFloat(document.getElementById('dailyWorkHours').value) || 8;
       let totalAvailableHours = workingDays * dailyHours;
-
-      // Subtrai a duração dos eventos
       const eventRows = document.querySelectorAll("#eventosTable tbody tr");
       let totalEventHours = 0;
       eventRows.forEach(tr => {
@@ -507,16 +475,13 @@
       return effectiveHours > 0 ? effectiveHours : 0;
     }
 
-    // Atualiza o campo de Horas Úteis Totais da Sprint
     function updateSprintEffectiveHours() {
       const effectiveHours = calculateTotalWorkingHours();
       document.getElementById('totalHorasSprint').value = effectiveHours.toFixed(2);
     }
 
-    // Recalcular quando o parâmetro de horas diárias mudar
     document.getElementById('dailyWorkHours').addEventListener('change', updateSprintEffectiveHours);
 
-    /* Seção Time (Membros) */
     let developerCount = 0;
     function createDeveloperCard() {
       developerCount++;
@@ -569,18 +534,15 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-      // Popula as tabelas de configuração com valores padrão
       addRowToTable("classificacaoTable", ["Sênior", "100"]);
       addRowToTable("classificacaoTable", ["Sênior-Pleno", "85"]);
       addRowToTable("classificacaoTable", ["Pleno", "70"]);
       addRowToTable("classificacaoTable", ["Júnior-Pleno", "65"]);
       addRowToTable("classificacaoTable", ["Júnior", "50"]);
       addRowToTable("classificacaoTable", ["Estagiário", "35"]);
-
       addRowToTable("maturidadeTable", ["Plena", "100"]);
       addRowToTable("maturidadeTable", ["Mediana", "80"]);
       addRowToTable("maturidadeTable", ["Inicial", "60"]);
-
       addRowToTable("spHorasTable", ["13", "39"]);
       addRowToTable("spHorasTable", ["8", "24"]);
       addRowToTable("spHorasTable", ["5", "15"]);
@@ -588,14 +550,9 @@
       addRowToTable("spHorasTable", ["2", "6"]);
       addRowToTable("spHorasTable", ["1", "3"]);
       addRowToTable("spHorasTable", ["0", "0"]);
-
       updateDeveloperDropdowns();
-
-      // Tipos de Membro pré cadastrados
       addTipoRow(["Desenvolvedor", true]);
       addTipoRow(["Tester", false]);
-
-      // Cria o primeiro membro automaticamente
       createDeveloperCard();
     });
 
@@ -612,7 +569,6 @@
       addTipoRow(["", true]);
     });
 
-    /* Cálculo da Capacidade */
     function calcularCapacidadePorDev(availableHours, spMapping) {
       let capacity = 0;
       let horaAtual = availableHours;
@@ -647,10 +603,8 @@
     }
 
     document.getElementById('calcularBtn').addEventListener('click', function () {
-      // Atualiza as horas úteis calculadas
       const sprintEffectiveHours = calculateTotalWorkingHours();
       document.getElementById('totalHorasSprint').value = sprintEffectiveHours.toFixed(2);
-
       let spMapping = [];
       document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
         const sp = tr.querySelector('.campo1').value;
@@ -659,7 +613,6 @@
           spMapping.push({ sp: sp, horas: horas });
         }
       });
-
       let totalTeamCapacity = 0;
       const tipoMapping = getTipoMapping();
       document.querySelectorAll('#developersContainer .card').forEach(card => {
@@ -676,13 +629,10 @@
         totalTeamCapacity += devCapacity;
         card.querySelector('.dev-capacidade').value = devCapacity.toFixed(2);
       });
-
       document.getElementById('totalCapacityDisplay').value = totalTeamCapacity.toFixed(2);
     });
 
     /* Seção Tarefas */
-
-    // Atualizações oficiais dos dropdowns de recurso e story points (mantendo seleção)
     function updateTaskResourceDropdowns() {
       const devNames = [];
       document.querySelectorAll("#developersContainer .dev-name").forEach(input => {
@@ -692,7 +642,7 @@
         }
       });
       document.querySelectorAll("#tasksTable tbody .task-resource").forEach(select => {
-        const currentValue = select.value; // armazena o valor atual
+        const currentValue = select.value;
         select.innerHTML = `<option value="">Selecione...</option>`;
         devNames.forEach(name => {
           const option = document.createElement("option");
@@ -715,7 +665,7 @@
         }
       });
       document.querySelectorAll("#tasksTable tbody .task-sp").forEach(select => {
-        const currentValue = select.value; // armazena o valor atual
+        const currentValue = select.value;
         select.innerHTML = `<option value="">Selecione...</option>`;
         spOptions.forEach(sp => {
           const option = document.createElement("option");
@@ -729,7 +679,6 @@
       });
     }
 
-    // Adiciona uma nova linha de tarefa (agora com colunas para Data Inicial e Data Final)
     function addTaskRow() {
       const tbody = document.querySelector("#tasksTable tbody");
       const rowCount = tbody.querySelectorAll("tr").length;
@@ -754,28 +703,21 @@
         <td><button type="button" class="btn btn-danger btn-sm remove-task">Remover</button></td>
       `;
       tbody.appendChild(tr);
-
-      // Valida IDs duplicados
       const idInput = tr.querySelector(".task-id");
       idInput.addEventListener("change", validateTaskIDs);
-
-      // Valida dependências
       const dependenciesInput = tr.querySelector(".task-dependencies");
       dependenciesInput.addEventListener("change", function() {
         validateTaskDependencies(tr);
       });
-
       tr.querySelector(".remove-task").addEventListener("click", function() {
         const removedId = tr.querySelector(".task-id").value;
         tr.remove();
         removeDependencyFromTasks(removedId);
       });
-
       updateTaskResourceDropdowns();
       updateTaskSPOptions();
     }
 
-    // Retorna todos os IDs das tarefas
     function getTaskIDs() {
       const ids = [];
       document.querySelectorAll("#tasksTable tbody .task-id").forEach(input => {
@@ -787,7 +729,6 @@
       return ids;
     }
 
-    // Valida se há IDs duplicados nas tarefas
     function validateTaskIDs() {
       const allIds = getTaskIDs();
       const idInputs = document.querySelectorAll("#tasksTable tbody .task-id");
@@ -802,7 +743,6 @@
       });
     }
 
-    // Valida as dependências da tarefa (IDs existentes, sem autodependência)
     function validateTaskDependencies(row) {
       const idInput = row.querySelector(".task-id");
       const taskId = idInput.value.trim();
@@ -823,7 +763,6 @@
       depInput.value = filteredDeps.join(", ");
     }
 
-    // Remove uma dependência de outras tarefas quando uma tarefa é excluída
     function removeDependencyFromTasks(removedId) {
       document.querySelectorAll("#tasksTable tbody .task-dependencies").forEach(depInput => {
         let deps = depInput.value.split(",").map(d => d.trim()).filter(d => d !== "");
@@ -834,7 +773,6 @@
       });
     }
 
-    // Atualiza os dropdowns de recurso sempre que o nome de um membro é alterado
     document.addEventListener("input", function(e) {
       if(e.target.classList.contains("dev-name")) {
         updateTaskResourceDropdowns();
@@ -843,9 +781,7 @@
 
     document.getElementById("addTask").addEventListener("click", addTaskRow);
 
-    /* Funções auxiliares para cálculo automático das datas das tarefas */
-
-    // Formata uma data para YYYY-MM-DD
+    /***************** Cálculo Automático das Datas das Tarefas *****************/
     function formatDate(date) {
       let yyyy = date.getFullYear();
       let mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -853,13 +789,11 @@
       return `${yyyy}-${mm}-${dd}`;
     }
 
-    // Verifica se uma data é dia útil (não consta em nonWorkingDays)
     function isWorkingDay(date) {
       let dateStr = formatDate(date);
       return !nonWorkingDays.includes(dateStr);
     }
 
-    // Retorna a próxima data útil (se a data informada não for útil)
     function getNextWorkingDate(date) {
       let d = new Date(date);
       while (!isWorkingDay(d)) {
@@ -868,7 +802,6 @@
       return d;
     }
 
-    // Adiciona um número de dias úteis a uma data
     function addWorkingDays(date, days) {
       let d = new Date(date);
       while (days > 0) {
@@ -880,7 +813,6 @@
       return d;
     }
 
-    // Cria um mapeamento dos Story Points para Horas a partir da tabela SP/Horas
     function getSPMapping() {
       let mapping = {};
       document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
@@ -893,8 +825,6 @@
       return mapping;
     }
 
-    // Calcula automaticamente as datas de início e fim de cada tarefa,
-    // respeitando dependências e a sequência (por recurso e pela ordem de ID)
     function calculateTaskDates() {
       const sprintStartStr = document.getElementById("sprintStartDate").value;
       if (!sprintStartStr) {
@@ -904,8 +834,6 @@
       const sprintStart = new Date(sprintStartStr);
       const dailyWorkHours = parseFloat(document.getElementById("dailyWorkHours").value) || 8;
       const spMapping = getSPMapping();
-      
-      // Coleta todas as tarefas
       let taskRows = Array.from(document.querySelectorAll("#tasksTable tbody tr"));
       let tasks = taskRows.map(row => {
           const id = parseInt(row.querySelector(".task-id").value.trim());
@@ -914,27 +842,18 @@
           const deps = row.querySelector(".task-dependencies").value.split(",").map(d => d.trim()).filter(d => d !== "");
           return { id, resource, sp, deps, row, start: null, end: null };
       });
-      // Ordena as tarefas por ID (prioridade)
       tasks.sort((a, b) => a.id - b.id);
-
-      // Para cada recurso, manter a data atual disponível
       const resourceDates = {};
-
       tasks.forEach(task => {
-        // Se não tiver recurso, não calcula datas
         if (!task.resource) {
           task.start = "";
           task.end = "";
           return;
         }
-        // Inicializa a data disponível para o recurso
         if (!resourceDates[task.resource]) {
           resourceDates[task.resource] = new Date(sprintStart);
         }
-        // A data candidata é a data disponível para o recurso
         let candidate = new Date(resourceDates[task.resource]);
-
-        // Considera as dependências: cada tarefa dependente obriga a iniciar no dia seguinte ao término da tarefa pai
         task.deps.forEach(depId => {
           const depTask = tasks.find(t => t.id == depId);
           if (depTask && depTask.end) {
@@ -945,25 +864,17 @@
             }
           }
         });
-        // Ajusta a data candidata para o próximo dia útil, se necessário
         candidate = getNextWorkingDate(candidate);
-
-        // Determina a duração em dias com base no Story Point
         let durationDays = 1;
         if (task.sp in spMapping) {
           const horasNecessarias = spMapping[task.sp];
           durationDays = Math.ceil(horasNecessarias / dailyWorkHours);
         }
-        // Define a data de início e calcula a data de fim (durante os dias úteis)
         task.start = candidate;
         const taskEnd = addWorkingDays(candidate, durationDays - 1);
         task.end = taskEnd;
-
-        // Atualiza a data disponível para o recurso (dia seguinte ao término desta tarefa)
         resourceDates[task.resource] = addWorkingDays(taskEnd, 1);
       });
-
-      // Atualiza os inputs da tabela de tarefas com as datas calculadas
       tasks.forEach(task => {
         const startInput = task.row.querySelector(".task-start-date");
         const endInput = task.row.querySelector(".task-end-date");
@@ -973,6 +884,268 @@
     }
 
     document.getElementById("calculateTaskDatesBtn").addEventListener("click", calculateTaskDates);
+
+    /***************** Funcionalidade de Exportação/Importação *****************/
+    const appVersion = "calculadora de capacidade scrum - v1.2.5";
+    document.getElementById("appVersionDisplay").innerText = appVersion;
+
+    function exportData() {
+      let data = {
+        version: appVersion,
+        sprint: {
+          title: document.getElementById("sprintTitle").value,
+          startDate: document.getElementById("sprintStartDate").value,
+          endDate: document.getElementById("sprintEndDate").value
+        },
+        nonWorkingDays: nonWorkingDays,
+        events: [],
+        teamMembers: [],
+        tasks: [],
+        globalSettings: {
+          dailyWorkHours: document.getElementById("dailyWorkHours").value,
+          classificacoes: [],
+          maturities: [],
+          spMapping: [],
+          tipos: []
+        }
+      };
+
+      document.querySelectorAll("#eventosTable tbody tr").forEach(row => {
+        let eventType = row.querySelector(".event-type").value;
+        let description = row.querySelector(".event-description").value;
+        let date = row.querySelector(".event-date").value;
+        let duration = row.querySelector(".event-duration").value;
+        let recurring = row.querySelector(".event-recurring").checked;
+        data.events.push({ eventType, description, date, duration, recurring });
+      });
+
+      document.querySelectorAll("#developersContainer .card").forEach(card => {
+        let name = card.querySelector(".dev-name").value;
+        let tipo = card.querySelector(".dev-tipo").value;
+        let classificacao = card.querySelector(".dev-classificacao").value;
+        let maturidade = card.querySelector(".dev-maturidade").value;
+        let disponibilidade = card.querySelector(".dev-disponibilidade").value;
+        data.teamMembers.push({ name, tipo, classificacao, maturidade, disponibilidade });
+      });
+
+      document.querySelectorAll("#tasksTable tbody tr").forEach(row => {
+        let id = row.querySelector(".task-id").value;
+        let name = row.querySelector(".task-name").value;
+        let resource = row.querySelector(".task-resource").value;
+        let sp = row.querySelector(".task-sp").value;
+        let dependencies = row.querySelector(".task-dependencies").value;
+        let startDate = row.querySelector(".task-start-date").value;
+        let endDate = row.querySelector(".task-end-date").value;
+        data.tasks.push({ id, name, resource, sp, dependencies, startDate, endDate });
+      });
+
+      document.querySelectorAll("#classificacaoTable tbody tr").forEach(row => {
+        let classification = row.querySelector(".campo1").value;
+        let rate = row.querySelector(".campo2").value;
+        data.globalSettings.classificacoes.push({ classification, rate });
+      });
+
+      document.querySelectorAll("#maturidadeTable tbody tr").forEach(row => {
+        let maturity = row.querySelector(".campo1").value;
+        let rate = row.querySelector(".campo2").value;
+        data.globalSettings.maturities.push({ maturity, rate });
+      });
+
+      document.querySelectorAll("#spHorasTable tbody tr").forEach(row => {
+        let sp = row.querySelector(".campo1").value;
+        let hours = row.querySelector(".campo2").value;
+        data.globalSettings.spMapping.push({ sp, hours });
+      });
+
+      document.querySelectorAll("#tipoTable tbody tr").forEach(row => {
+        let tipo = row.querySelector(".tipo-name").value;
+        let consider = row.querySelector(".tipo-consider").checked;
+        data.globalSettings.tipos.push({ tipo, consider });
+      });
+
+      let jsonStr = JSON.stringify(data, null, 2);
+      let fileName = prompt("Digite o nome do arquivo para exportação (ex: dados.json):", "dados.json");
+      if (!fileName) return;
+      let blob = new Blob([jsonStr], { type: "application/json" });
+      let link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+    }
+
+    function importDataFromFile(event) {
+      let file = event.target.files[0];
+      if (!file) return;
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          let jsonData = JSON.parse(e.target.result);
+          importData(jsonData);
+        } catch (err) {
+          alert("Erro ao importar o arquivo: " + err);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function importData(data) {
+      document.getElementById("sprintTitle").value = data.sprint.title || "";
+      document.getElementById("sprintStartDate").value = data.sprint.startDate || "";
+      document.getElementById("sprintEndDate").value = data.sprint.endDate || "";
+      nonWorkingDays = data.nonWorkingDays || [];
+      renderNonWorkingDaysList();
+
+      let eventosTbody = document.querySelector("#eventosTable tbody");
+      eventosTbody.innerHTML = "";
+      (data.events || []).forEach(eventObj => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <select class="form-select event-type">
+              <option value="Planning" ${eventObj.eventType === "Planning" ? "selected" : ""}>Planning</option>
+              <option value="Refinamento" ${eventObj.eventType === "Refinamento" ? "selected" : ""}>Refinamento</option>
+              <option value="Review" ${eventObj.eventType === "Review" ? "selected" : ""}>Review</option>
+              <option value="Retrospectiva" ${eventObj.eventType === "Retrospectiva" ? "selected" : ""}>Retrospectiva</option>
+              <option value="Daily" ${eventObj.eventType === "Daily" ? "selected" : ""}>Daily</option>
+              <option value="Outros" ${eventObj.eventType === "Outros" ? "selected" : ""}>Outros</option>
+            </select>
+          </td>
+          <td><input type="text" class="form-control event-description" value="${eventObj.description}" /></td>
+          <td><input type="date" class="form-control event-date" value="${eventObj.date}" /></td>
+          <td><input type="number" class="form-control event-duration" value="${eventObj.duration}" min="0" /></td>
+          <td class="text-center"><input type="checkbox" class="form-check-input event-recurring" ${eventObj.recurring ? "checked" : ""} /></td>
+          <td><button type="button" class="btn btn-danger btn-sm remove-event">Remover</button></td>
+        `;
+        eventosTbody.appendChild(tr);
+        tr.querySelectorAll('.event-date, .event-duration, .event-recurring').forEach(input => {
+          input.addEventListener('change', updateSprintEffectiveHours);
+        });
+        tr.querySelector('.remove-event').addEventListener('click', function () {
+          tr.remove();
+          updateSprintEffectiveHours();
+        });
+      });
+
+      let devContainer = document.getElementById("developersContainer");
+      devContainer.innerHTML = "";
+      (data.teamMembers || []).forEach(member => {
+        let card = document.createElement("div");
+        card.className = "card mb-3";
+        card.innerHTML = `
+          <div class="card-header">
+            Membro
+            <button type="button" class="btn-close float-end remove-developer" aria-label="Remover"></button>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Nome</label>
+              <input type="text" class="form-control dev-name" placeholder="Nome do Membro" value="${member.name}" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tipo</label>
+              <select class="form-select dev-tipo"></select>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Classificação</label>
+                <select class="form-select dev-classificacao"></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Maturidade</label>
+                <select class="form-select dev-maturidade"></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Taxa de Disponibilidade (%)</label>
+                <input type="number" class="form-control dev-disponibilidade" value="${member.disponibilidade}" min="0" max="100" />
+              </div>
+            </div>
+            <div class="mt-3">
+              <label class="form-label">Capacidade do Membro (SP)</label>
+              <input type="text" class="form-control dev-capacidade" value="0" readonly />
+            </div>
+          </div>
+        `;
+        devContainer.appendChild(card);
+        card.querySelector('.remove-developer').addEventListener('click', function () {
+          card.remove();
+        });
+      });
+      updateDeveloperDropdowns();
+      updateTipoDropdowns();
+
+      let tasksTbody = document.querySelector("#tasksTable tbody");
+      tasksTbody.innerHTML = "";
+      (data.tasks || []).forEach(task => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="number" class="form-control task-id" value="${task.id}" /></td>
+          <td><input type="text" class="form-control task-name" placeholder="Nome da Tarefa" value="${task.name}" /></td>
+          <td>
+            <select class="form-select task-resource">
+              <option value="">Selecione...</option>
+            </select>
+          </td>
+          <td>
+            <select class="form-select task-sp">
+              <option value="">Selecione...</option>
+            </select>
+          </td>
+          <td><input type="text" class="form-control task-dependencies" placeholder="IDs separados por vírgula" value="${task.dependencies}" /></td>
+          <td><input type="date" class="form-control task-start-date" value="${task.startDate}" /></td>
+          <td><input type="date" class="form-control task-end-date" value="${task.endDate}" /></td>
+          <td><button type="button" class="btn btn-danger btn-sm remove-task">Remover</button></td>
+        `;
+        tasksTbody.appendChild(tr);
+        const idInput = tr.querySelector(".task-id");
+        idInput.addEventListener("change", validateTaskIDs);
+        const dependenciesInput = tr.querySelector(".task-dependencies");
+        dependenciesInput.addEventListener("change", function() {
+          validateTaskDependencies(tr);
+        });
+        tr.querySelector(".remove-task").addEventListener("click", function() {
+          const removedId = tr.querySelector(".task-id").value;
+          tr.remove();
+          removeDependencyFromTasks(removedId);
+        });
+      });
+      updateTaskResourceDropdowns();
+      updateTaskSPOptions();
+
+      document.getElementById("dailyWorkHours").value = data.globalSettings.dailyWorkHours || 8;
+
+      let classificacaoTbody = document.querySelector("#classificacaoTable tbody");
+      classificacaoTbody.innerHTML = "";
+      (data.globalSettings.classificacoes || []).forEach(item => {
+        addRowToTable("classificacaoTable", [item.classification, item.rate]);
+      });
+
+      let maturidadeTbody = document.querySelector("#maturidadeTable tbody");
+      maturidadeTbody.innerHTML = "";
+      (data.globalSettings.maturities || []).forEach(item => {
+        addRowToTable("maturidadeTable", [item.maturity, item.rate]);
+      });
+
+      let spTbody = document.querySelector("#spHorasTable tbody");
+      spTbody.innerHTML = "";
+      (data.globalSettings.spMapping || []).forEach(item => {
+        addRowToTable("spHorasTable", [item.sp, item.hours]);
+      });
+
+      let tipoTbody = document.querySelector("#tipoTable tbody");
+      tipoTbody.innerHTML = "";
+      (data.globalSettings.tipos || []).forEach(item => {
+        addTipoRow([item.tipo, item.consider]);
+      });
+
+      updateSprintEffectiveHours();
+    }
+
+    /***************** Eventos de Exportação/Importação *****************/
+    document.getElementById("exportBtn").addEventListener("click", exportData);
+    document.getElementById("importBtn").addEventListener("click", function() {
+      document.getElementById("importFileInput").click();
+    });
+    document.getElementById("importFileInput").addEventListener("change", importDataFromFile);
   </script>
 </body>
 
