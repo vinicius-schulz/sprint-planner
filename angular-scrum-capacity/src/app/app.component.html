@@ -1,0 +1,295 @@
+<div class="container my-4">
+  <h1 class="mb-4">Calculadora de Capacidade Scrum</h1>
+  <!-- Informações da Sprint -->
+  <div class="card mb-3">
+    <div class="card-header">Informações da Sprint</div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label for="sprintTitle" class="form-label">Título da Sprint</label>
+        <input type="text" id="sprintTitle" class="form-control" [(ngModel)]="sprintTitle" placeholder="Digite o título da sprint">
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="sprintStartDate" class="form-label">Data de Início</label>
+          <input type="date" id="sprintStartDate" class="form-control" [(ngModel)]="sprintStartDate" (change)="updateNonWorkingDaysFromDates()">
+        </div>
+        <div class="col-md-6">
+          <label for="sprintEndDate" class="form-label">Data de Fim</label>
+          <input type="date" id="sprintEndDate" class="form-control" [(ngModel)]="sprintEndDate" (change)="updateNonWorkingDaysFromDates()">
+        </div>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="totalHorasSprint" class="form-label">Horas Úteis Totais da Sprint</label>
+          <input type="text" id="totalHorasSprint" class="form-control" [value]="totalHorasSprint.toFixed(2).replace('.', ',')" readonly>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Capacidade Total (SP)</label>
+          <input type="text" id="totalCapacityDisplay" class="form-control" [value]="totalCapacityDisplay.toFixed(2).replace('.', ',')" readonly>
+        </div>
+      </div>
+      <small class="text-muted d-block mb-3">
+        Horas úteis calculadas com base na data de início, data de fim, dias não úteis, eventos da sprint e horas diárias.
+      </small>
+      <!-- Dias Não Úteis -->
+      <div class="mb-3">
+        <h5>Dias Não Úteis</h5>
+        <p class="text-muted">
+          Os finais de semana serão adicionados automaticamente. Remova ou adicione outros dias não úteis.
+        </p>
+        <div class="input-group mb-3">
+          <input type="date" class="form-control" [(ngModel)]="nonWorkingDayInput">
+          <button class="btn btn-primary" (click)="addNonWorkingDay()">Adicionar Dia Não Útil</button>
+        </div>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let day of nonWorkingDays">
+            {{ day }}
+            <button class="btn btn-danger btn-sm" (click)="removeNonWorkingDay(day)">Remover</button>
+          </li>
+        </ul>
+      </div>
+      <!-- Eventos da Sprint -->
+      <div class="mb-3">
+        <h5>Eventos da Sprint</h5>
+        <p class="text-muted">Informe os eventos relevantes ocorridos na sprint.</p>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Tipo de Evento</th>
+              <th>Descrição</th>
+              <th>Data de Ocorrência</th>
+              <th>Tempo Gasto (min)</th>
+              <th>Recorrente</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ev of events; let i = index">
+              <td>
+                <select class="form-select" [(ngModel)]="ev.eventType" (change)="updateSprintEffectiveHours()">
+                  <option value="Planning">Planning</option>
+                  <option value="Refinamento">Refinamento</option>
+                  <option value="Review">Review</option>
+                  <option value="Retrospectiva">Retrospectiva</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Outros">Outros</option>
+                </select>
+              </td>
+              <td><input type="text" class="form-control" [(ngModel)]="ev.description"></td>
+              <td><input type="date" class="form-control" [(ngModel)]="ev.date" (change)="updateSprintEffectiveHours()"></td>
+              <td><input type="number" class="form-control" [(ngModel)]="ev.duration" (change)="updateSprintEffectiveHours()" min="0"></td>
+              <td class="text-center"><input type="checkbox" class="form-check-input" [(ngModel)]="ev.recurring" (change)="updateSprintEffectiveHours()"></td>
+              <td><button type="button" class="btn btn-danger btn-sm" (click)="removeEvent(i)">Remover</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn btn-primary btn-sm" (click)="addEvent()">Adicionar Evento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abas: Time e Configurações Globais -->
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='dev'" (click)="activeTab='dev'" href="javascript:void(0)">Time</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='config'" (click)="activeTab='config'" href="javascript:void(0)">Configurações Globais</a>
+    </li>
+  </ul>
+  <div class="tab-content mt-3">
+    <!-- Aba Time -->
+    <div class="tab-pane fade" [class.show]="activeTab==='dev'" [class.active]="activeTab==='dev'">
+      <div class="card">
+        <div class="card-body">
+          <div *ngFor="let dev of developers; let i = index" class="card mb-3">
+            <div class="card-header">
+              Membro {{ i+1 }}
+              <button type="button" class="btn-close float-end" (click)="removeDeveloper(i)"></button>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" [(ngModel)]="dev.name" (ngModelChange)="updateCapacity()"
+                  placeholder="Nome do Membro">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tipo</label>
+                <select class="form-select" [(ngModel)]="dev.tipo" (change)="updateCapacity()">
+                  <option *ngFor="let t of tipos" [value]="t.tipo">{{ t.tipo }} {{ t.consider ? '(Contabilizar na Capacidade)' : '(Não Contabilizar na Capacidade)' }}</option>
+                </select>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">Classificação</label>
+                  <select class="form-select" [(ngModel)]="dev.classificacao" (change)="updateCapacity()">
+                    <option *ngFor="let c of classificacoes" [value]="c.value2">{{ c.value1 }} ({{ c.value2 }}%)</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Maturidade</label>
+                  <select class="form-select" [(ngModel)]="dev.maturidade" (change)="updateCapacity()">
+                    <option *ngFor="let m of maturities" [value]="m.value2">{{ m.value1 }} ({{ m.value2 }}%)</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Taxa de Disponibilidade (%)</label>
+                  <input type="number" class="form-control" [(ngModel)]="dev.disponibilidade" (change)="updateCapacity()"
+                    min="0" max="100">
+                </div>
+              </div>
+              <div class="mt-3">
+                <label class="form-label">Capacidade do Membro (SP)</label>
+                <input type="text" class="form-control" [value]="dev.capacidade.toFixed(2).replace('.', ',')" readonly>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="addDeveloper()">Adicionar Membro</button>
+        </div>
+      </div>
+    </div>
+    <!-- Aba Configurações Globais -->
+    <div class="tab-pane fade" [class.show]="activeTab==='config'" [class.active]="activeTab==='config'">
+      <div class="card">
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="dailyWorkHours" class="form-label">Horas Diárias para Trabalho</label>
+            <input type="number" id="dailyWorkHours" class="form-control" [(ngModel)]="dailyWorkHours" (change)="updateSprintEffectiveHours()" min="0">
+          </div>
+          <!-- Classificações de Desenvolvedor -->
+          <h5 class="section-title">Classificações de Desenvolvedor</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Classificação</th>
+                <th>Taxa (%)</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of classificacoes; let i = index">
+                <td><input type="text" class="form-control" [(ngModel)]="c.value1" (change)="updateCapacity()"></td>
+                <td><input type="number" class="form-control" [(ngModel)]="c.value2" (change)="updateCapacity()" min="0"></td>
+                <td><button type="button" class="btn btn-danger btn-sm" (click)="classificacoes.splice(i,1); updateCapacity()">Remover</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary btn-sm mb-3" (click)="classificacoes.push({value1: '', value2: ''})">Adicionar Classificação</button>
+          <!-- Maturidade no Projeto -->
+          <h5 class="section-title">Maturidade no Projeto</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Maturidade</th>
+                <th>Taxa (%)</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of maturities; let i = index">
+                <td><input type="text" class="form-control" [(ngModel)]="m.value1" (change)="updateCapacity()"></td>
+                <td><input type="number" class="form-control" [(ngModel)]="m.value2" (change)="updateCapacity()" min="0"></td>
+                <td><button type="button" class="btn btn-danger btn-sm" (click)="maturities.splice(i,1); updateCapacity()">Remover</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary btn-sm mb-3" (click)="maturities.push({value1: '', value2: ''})">Adicionar Nível de Maturidade</button>
+          <!-- Relação Story Points / Horas -->
+          <h5 class="section-title">Relação Story Points / Horas</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Story Points</th>
+                <th>Horas</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let sp of spMapping; let i = index">
+                <td><input type="text" class="form-control" [(ngModel)]="sp.sp" (change)="updateCapacity()"></td>
+                <td><input type="number" class="form-control" [(ngModel)]="sp.hours" (change)="updateCapacity()" min="0"></td>
+                <td><button type="button" class="btn btn-danger btn-sm" (click)="spMapping.splice(i,1); updateCapacity()">Remover</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary btn-sm mb-3" (click)="spMapping.push({sp:'', hours:0})">Adicionar Relação</button>
+          <!-- Tipos de Membro -->
+          <h5 class="section-title">Tipos de Membro</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Considerar na Capacidade</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of tipos; let i = index">
+                <td><input type="text" class="form-control" [(ngModel)]="t.tipo" (change)="updateCapacity()"></td>
+                <td class="text-center"><input type="checkbox" class="form-check-input" [(ngModel)]="t.consider" (change)="updateCapacity()"></td>
+                <td><button type="button" class="btn btn-danger btn-sm" (click)="removeTipo(i)">Remover</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary btn-sm" (click)="addTipo()">Adicionar Tipo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Tarefas -->
+  <div class="container my-4">
+    <div class="card mb-3">
+      <div class="card-header">Lista de Tarefas</div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome da Tarefa</th>
+              <th>Recurso</th>
+              <th>Story Points</th>
+              <th>Dependências</th>
+              <th>Data Inicial</th>
+              <th>Data Final</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let task of tasks; let i = index">
+              <td><input type="number" class="form-control" [(ngModel)]="task.id"></td>
+              <td><input type="text" class="form-control" [(ngModel)]="task.name" placeholder="Nome da Tarefa"></td>
+              <td>
+                <select class="form-select" [(ngModel)]="task.resource">
+                  <option value="">Selecione...</option>
+                  <option *ngFor="let dev of developers" [value]="dev.name">{{ dev.name }}</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select" [(ngModel)]="task.sp">
+                  <option value="">Selecione...</option>
+                  <option *ngFor="let sp of spMapping" [value]="sp.sp">{{ sp.sp }}</option>
+                </select>
+              </td>
+              <td><input type="text" class="form-control" [(ngModel)]="task.dependencies" placeholder="IDs separados por vírgula"></td>
+              <td><input type="date" class="form-control" [(ngModel)]="task.startDate"></td>
+              <td><input type="date" class="form-control" [(ngModel)]="task.endDate"></td>
+              <td><button type="button" class="btn btn-danger btn-sm" (click)="removeTask(i)">Remover</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn btn-primary btn-sm" (click)="addTask()">Adicionar Tarefa</button>
+        <button class="btn btn-info btn-sm ms-2" (click)="calculateTaskDates()">Calcular Datas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exportação/Importação e exibição da versão -->
+  <div class="container my-4">
+    <button class="btn btn-secondary" (click)="exportData()">Exportar Dados</button>
+    <button class="btn btn-secondary" (click)="fileInput.click()">Importar Dados</button>
+    <input type="file" #fileInput style="display: none;" accept="application/json" (change)="importData($event)" />
+    <div class="mt-2">
+      <small>Versão: {{ appVersion }}</small>
+    </div>
+  </div>
