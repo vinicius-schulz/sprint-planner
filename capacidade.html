@@ -47,7 +47,8 @@
           </div>
         </div>
         <small class="text-muted d-block mb-3">
-          Horas úteis calculadas com base na data de início, data de fim, dias não úteis, eventos da sprint e horas diárias.
+          Horas úteis calculadas com base na data de início, data de fim, dias não úteis, eventos da sprint e horas
+          diárias.
         </small>
         <!-- Dias Não Úteis -->
         <div class="mb-3">
@@ -520,7 +521,7 @@
     function updateCapacity() {
       const sprintEffectiveHours = calculateTotalWorkingHours();
       document.getElementById('totalHorasSprint').value = sprintEffectiveHours.toFixed(2).replace('.', ',');
-      
+
       let spMapping = [];
       document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
         const sp = tr.querySelector('.campo1').value;
@@ -549,7 +550,7 @@
     }
 
     // Atualiza capacidade ao alterar campos específicos
-    document.addEventListener("input", function(e) {
+    document.addEventListener("input", function (e) {
       if (
         e.target.classList.contains("dev-disponibilidade") ||
         e.target.classList.contains("dev-classificacao") ||
@@ -571,7 +572,8 @@
         }
       });
       document.querySelectorAll("#tasksTable tbody .task-resource").forEach(select => {
-        const currentValue = select.value;
+        const importedVal = select.getAttribute("data-imported-value") || "";
+        const currentValue = importedVal || select.value;
         select.innerHTML = `<option value="">Selecione...</option>`;
         devNames.forEach(name => {
           const option = document.createElement("option");
@@ -581,9 +583,11 @@
         });
         if (currentValue && devNames.includes(currentValue)) {
           select.value = currentValue;
+          select.removeAttribute("data-imported-value");
         }
       });
     }
+
 
     function updateTaskSPOptions() {
       const spOptions = [];
@@ -594,7 +598,8 @@
         }
       });
       document.querySelectorAll("#tasksTable tbody .task-sp").forEach(select => {
-        const currentValue = select.value;
+        const importedVal = select.getAttribute("data-imported-value") || "";
+        const currentValue = importedVal || select.value;
         select.innerHTML = `<option value="">Selecione...</option>`;
         spOptions.forEach(sp => {
           const option = document.createElement("option");
@@ -604,9 +609,11 @@
         });
         if (currentValue && spOptions.includes(currentValue)) {
           select.value = currentValue;
+          select.removeAttribute("data-imported-value");
         }
       });
     }
+
 
     function addTaskRow() {
       const tbody = document.querySelector("#tasksTable tbody");
@@ -635,10 +642,10 @@
       const idInput = tr.querySelector(".task-id");
       idInput.addEventListener("change", validateTaskIDs);
       const dependenciesInput = tr.querySelector(".task-dependencies");
-      dependenciesInput.addEventListener("change", function() {
+      dependenciesInput.addEventListener("change", function () {
         validateTaskDependencies(tr);
       });
-      tr.querySelector(".remove-task").addEventListener("click", function() {
+      tr.querySelector(".remove-task").addEventListener("click", function () {
         const removedId = tr.querySelector(".task-id").value;
         tr.remove();
         removeDependencyFromTasks(removedId);
@@ -651,7 +658,7 @@
       const ids = [];
       document.querySelectorAll("#tasksTable tbody .task-id").forEach(input => {
         const val = input.value.trim();
-        if(val !== "") {
+        if (val !== "") {
           ids.push(val);
         }
       });
@@ -679,11 +686,11 @@
       let deps = depInput.value.split(",").map(d => d.trim()).filter(d => d !== "");
       const validIds = getTaskIDs();
       const filteredDeps = deps.filter(dep => {
-        if(dep === taskId) {
+        if (dep === taskId) {
           alert("Uma tarefa não pode depender dela mesma: " + dep);
           return false;
         }
-        if(!validIds.includes(dep)) {
+        if (!validIds.includes(dep)) {
           alert("Dependência inválida: " + dep + ". Essa tarefa não existe.");
           return false;
         }
@@ -702,8 +709,8 @@
       });
     }
 
-    document.addEventListener("input", function(e) {
-      if(e.target.classList.contains("dev-name")) {
+    document.addEventListener("input", function (e) {
+      if (e.target.classList.contains("dev-name")) {
         updateTaskResourceDropdowns();
       }
     });
@@ -726,7 +733,7 @@
     function getNextWorkingDate(date) {
       let d = new Date(date);
       while (!isWorkingDay(d)) {
-         d.setDate(d.getDate() + 1);
+        d.setDate(d.getDate() + 1);
       }
       return d;
     }
@@ -734,10 +741,10 @@
     function addWorkingDays(date, days) {
       let d = new Date(date);
       while (days > 0) {
-         d.setDate(d.getDate() + 1);
-         if (isWorkingDay(d)) {
-             days--;
-         }
+        d.setDate(d.getDate() + 1);
+        if (isWorkingDay(d)) {
+          days--;
+        }
       }
       return d;
     }
@@ -765,11 +772,11 @@
       const spMapping = getSPMapping();
       let taskRows = Array.from(document.querySelectorAll("#tasksTable tbody tr"));
       let tasks = taskRows.map(row => {
-          const id = parseInt(row.querySelector(".task-id").value.trim());
-          const resource = row.querySelector(".task-resource").value.trim();
-          const sp = row.querySelector(".task-sp").value.trim();
-          const deps = row.querySelector(".task-dependencies").value.split(",").map(d => d.trim()).filter(d => d !== "");
-          return { id, resource, sp, deps, row, start: null, end: null };
+        const id = parseInt(row.querySelector(".task-id").value.trim());
+        const resource = row.querySelector(".task-resource").value.trim();
+        const sp = row.querySelector(".task-sp").value.trim();
+        const deps = row.querySelector(".task-dependencies").value.split(",").map(d => d.trim()).filter(d => d !== "");
+        return { id, resource, sp, deps, row, start: null, end: null };
       });
       tasks.sort((a, b) => a.id - b.id);
       const resourceDates = {};
@@ -893,8 +900,7 @@
       });
 
       let jsonStr = JSON.stringify(data, null, 2);
-      let fileName = prompt("Digite o nome do arquivo para exportação (ex: dados.json):", "dados.json");
-      if (!fileName) return;
+      let fileName = "dados.json";
       let blob = new Blob([jsonStr], { type: "application/json" });
       let link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
@@ -906,7 +912,7 @@
       let file = event.target.files[0];
       if (!file) return;
       let reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         try {
           let jsonData = JSON.parse(e.target.result);
           importData(jsonData);
@@ -1029,14 +1035,19 @@
         const idInput = tr.querySelector(".task-id");
         idInput.addEventListener("change", validateTaskIDs);
         const dependenciesInput = tr.querySelector(".task-dependencies");
-        dependenciesInput.addEventListener("change", function() {
+        dependenciesInput.addEventListener("change", function () {
           validateTaskDependencies(tr);
         });
-        tr.querySelector(".remove-task").addEventListener("click", function() {
+        tr.querySelector(".remove-task").addEventListener("click", function () {
           const removedId = tr.querySelector(".task-id").value;
           tr.remove();
           removeDependencyFromTasks(removedId);
         });
+        // Preserva os valores importados:
+        let resourceSelect = tr.querySelector(".task-resource");
+        resourceSelect.setAttribute("data-imported-value", task.resource || "");
+        let spSelect = tr.querySelector(".task-sp");
+        spSelect.setAttribute("data-imported-value", task.sp || "");
       });
 
       document.getElementById("dailyWorkHours").value = data.globalSettings.dailyWorkHours || 8;
@@ -1073,7 +1084,7 @@
 
     /***************** Eventos de Exportação/Importação *****************/
     document.getElementById("exportBtn").addEventListener("click", exportData);
-    document.getElementById("importBtn").addEventListener("click", function() {
+    document.getElementById("importBtn").addEventListener("click", function () {
       document.getElementById("importFileInput").click();
     });
     document.getElementById("importFileInput").addEventListener("change", importDataFromFile);

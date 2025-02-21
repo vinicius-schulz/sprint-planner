@@ -1,0 +1,229 @@
+{
+  "version": "calculadora de capacidade scrum - v1.2.5",
+  "sprint": {
+    "title": "Sprint 1",
+    "startDate": "2025-02-17",
+    "endDate": "2025-02-28"
+  },
+  "nonWorkingDays": [
+    "2025-02-22",
+    "2025-02-23"
+  ],
+  "events": [
+    {
+      "eventType": "Planning",
+      "description": "",
+      "date": "2025-02-17",
+      "duration": "180",
+      "recurring": false
+    },
+    {
+      "eventType": "Retrospectiva",
+      "description": "",
+      "date": "2025-02-28",
+      "duration": "60",
+      "recurring": false
+    },
+    {
+      "eventType": "Review",
+      "description": "",
+      "date": "2025-02-28",
+      "duration": "60",
+      "recurring": false
+    },
+    {
+      "eventType": "Daily",
+      "description": "",
+      "date": "2025-02-18",
+      "duration": "30",
+      "recurring": true
+    },
+    {
+      "eventType": "Refinamento",
+      "description": "",
+      "date": "2025-02-25",
+      "duration": "60",
+      "recurring": false
+    }
+  ],
+  "teamMembers": [
+    {
+      "name": "Vinicius",
+      "tipo": "Desenvolvedor",
+      "classificacao": "100",
+      "maturidade": "100",
+      "disponibilidade": "50"
+    },
+    {
+      "name": "Matheus",
+      "tipo": "Desenvolvedor",
+      "classificacao": "100",
+      "maturidade": "100",
+      "disponibilidade": "80"
+    },
+    {
+      "name": "Flavia",
+      "tipo": "Desenvolvedor",
+      "classificacao": "100",
+      "maturidade": "100",
+      "disponibilidade": "90"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "name": "Tarefa 1",
+      "resource": "Vinicius",
+      "sp": "",
+      "dependencies": "",
+      "startDate": "2025-02-16",
+      "endDate": "2025-02-18"
+    },
+    {
+      "id": "2",
+      "name": "Tarefa 2",
+      "resource": "",
+      "sp": "8",
+      "dependencies": "1",
+      "startDate": "2025-02-19",
+      "endDate": "2025-02-20"
+    },
+    {
+      "id": "3",
+      "name": "Tarefa 3",
+      "resource": "",
+      "sp": "",
+      "dependencies": "2",
+      "startDate": "2025-02-16",
+      "endDate": "2025-02-20"
+    },
+    {
+      "id": "4",
+      "name": "Tarefa 4",
+      "resource": "",
+      "sp": "",
+      "dependencies": "3",
+      "startDate": "2025-02-16",
+      "endDate": "2025-02-18"
+    },
+    {
+      "id": "5",
+      "name": "Tarefa 5",
+      "resource": "",
+      "sp": "",
+      "dependencies": "",
+      "startDate": "2025-02-19",
+      "endDate": "2025-02-20"
+    },
+    {
+      "id": "6",
+      "name": "Tarefa 6",
+      "resource": "",
+      "sp": "",
+      "dependencies": "",
+      "startDate": "2025-02-21",
+      "endDate": "2025-02-24"
+    },
+    {
+      "id": "7",
+      "name": "Tarefa 7",
+      "resource": "",
+      "sp": "",
+      "dependencies": "",
+      "startDate": "2025-02-21",
+      "endDate": "2025-02-24"
+    },
+    {
+      "id": "8",
+      "name": "Tarefa 8",
+      "resource": "",
+      "sp": "",
+      "dependencies": "",
+      "startDate": "2025-02-25",
+      "endDate": "2025-02-25"
+    }
+  ],
+  "globalSettings": {
+    "dailyWorkHours": "8",
+    "classificacoes": [
+      {
+        "classification": "Sênior",
+        "rate": "100"
+      },
+      {
+        "classification": "Sênior-Pleno",
+        "rate": "85"
+      },
+      {
+        "classification": "Pleno",
+        "rate": "70"
+      },
+      {
+        "classification": "Júnior-Pleno",
+        "rate": "65"
+      },
+      {
+        "classification": "Júnior",
+        "rate": "50"
+      },
+      {
+        "classification": "Estagiário",
+        "rate": "35"
+      }
+    ],
+    "maturities": [
+      {
+        "maturity": "Plena",
+        "rate": "100"
+      },
+      {
+        "maturity": "Mediana",
+        "rate": "80"
+      },
+      {
+        "maturity": "Inicial",
+        "rate": "60"
+      }
+    ],
+    "spMapping": [
+      {
+        "sp": "13",
+        "hours": "39"
+      },
+      {
+        "sp": "8",
+        "hours": "24"
+      },
+      {
+        "sp": "5",
+        "hours": "15"
+      },
+      {
+        "sp": "3",
+        "hours": "9"
+      },
+      {
+        "sp": "2",
+        "hours": "6"
+      },
+      {
+        "sp": "1",
+        "hours": "3"
+      },
+      {
+        "sp": "0",
+        "hours": "0"
+      }
+    ],
+    "tipos": [
+      {
+        "tipo": "Desenvolvedor",
+        "consider": true
+      },
+      {
+        "tipo": "Tester",
+        "consider": false
+      }
+    ]
+  }
+}
