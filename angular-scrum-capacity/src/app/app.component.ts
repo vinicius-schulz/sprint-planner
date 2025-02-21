@@ -11,8 +11,8 @@ interface EventItem {
 interface Developer {
   name: string;
   tipo: string;
-  classificacao: number; // valor em porcentagem (ex: 100, 85, etc.)
-  maturidade: number;    // valor em porcentagem
+  classificacao: number;
+  maturidade: number;
   disponibilidade: number;
   capacidade: number;
 }
@@ -65,8 +65,8 @@ export class AppComponent implements OnInit {
   spMapping: { sp: string, hours: number }[] = [];
   tipos: { tipo: string, consider: boolean }[] = [];
 
-  // Controle de abas
-  activeTab: string = 'dev';
+  // Controle de abas (usaremos activeTabIndex para o p-tabView)
+  activeTabIndex: number = 0;
 
   // Versão da aplicação
   appVersion: string = "calculadora de capacidade scrum - v1.2.5";
