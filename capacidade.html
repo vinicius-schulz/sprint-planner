@@ -1,1181 +1,724 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calculadora de Capacidade Scrum</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .section-title {
-      margin-top: 1rem;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-
 <body>
   <div class="container my-4">
-    <h1 class="mb-4">Calculadora de Capacidade Scrum</h1>
-
-    <!-- Informações da Sprint -->
-    <div class="card mb-3">
-      <div class="card-header">Informações da Sprint</div>
-      <div class="card-body">
-        <div class="mb-3">
-          <label for="sprintTitle" class="form-label">Título da Sprint</label>
-          <input type="text" id="sprintTitle" class="form-control" placeholder="Digite o título da sprint">
-        </div>
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label for="sprintStartDate" class="form-label">Data de Início</label>
-            <input type="date" id="sprintStartDate" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label for="sprintEndDate" class="form-label">Data de Fim</label>
-            <input type="date" id="sprintEndDate" class="form-control">
-          </div>
-        </div>
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label for="totalHorasSprint" class="form-label">Horas Úteis Totais da Sprint</label>
-            <input type="text" id="totalHorasSprint" class="form-control" value="0" readonly>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Capacidade Total (SP)</label>
-            <input type="text" id="totalCapacityDisplay" class="form-control" value="0" readonly>
-          </div>
-        </div>
-        <small class="text-muted d-block mb-3">
-          Horas úteis calculadas com base na data de início, data de fim, dias não úteis, eventos da sprint e horas
-          diárias.
-        </small>
-        <!-- Dias Não Úteis -->
-        <div class="mb-3">
-          <h5>Dias Não Úteis</h5>
-          <p class="text-muted">
-            Os finais de semana serão adicionados automaticamente. Remova ou adicione outros dias não úteis.
-          </p>
-          <div class="input-group mb-3">
-            <input type="date" id="nonWorkingDayInput" class="form-control">
-            <button id="addNonWorkingDay" class="btn btn-primary">Adicionar Dia Não Útil</button>
-          </div>
-          <ul class="list-group" id="nonWorkingDaysList">
-            <!-- Lista de dias não úteis -->
-          </ul>
-        </div>
-        <!-- Eventos da Sprint -->
-        <div class="mb-3">
-          <h5>Eventos da Sprint</h5>
-          <p class="text-muted">Informe os eventos relevantes ocorridos na sprint.</p>
-          <table class="table table-bordered" id="eventosTable">
-            <thead>
-              <tr>
-                <th>Tipo de Evento</th>
-                <th>Descrição</th>
-                <th>Data de Ocorrência</th>
-                <th>Tempo Gasto (min)</th>
-                <th>Recorrente</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Linhas de eventos serão inseridas dinamicamente -->
-            </tbody>
-          </table>
-          <button id="addEvento" class="btn btn-primary btn-sm">Adicionar Evento</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Abas: Time e Configurações Globais -->
+    <h1 class="text-center">Calculadora de Capacidade Scrum – v1.0</h1>
+    <!-- Navegação por abas -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="dev-tab" data-bs-toggle="tab" data-bs-target="#dev" type="button" role="tab"
-          aria-controls="dev" aria-selected="true">Time</button>
+        <button class="nav-link active" id="sprint-tab" data-bs-toggle="tab" data-bs-target="#sprint" type="button" role="tab">Sprint</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab"
-          aria-controls="config" aria-selected="false">Configurações Globais</button>
+        <button class="nav-link" id="naoUteis-tab" data-bs-toggle="tab" data-bs-target="#naoUteis" type="button" role="tab">Dias Não Úteis</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="eventos-tab" data-bs-toggle="tab" data-bs-target="#eventos" type="button" role="tab">Eventos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="time-tab" data-bs-toggle="tab" data-bs-target="#time" type="button" role="tab">Time</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tarefas-tab" data-bs-toggle="tab" data-bs-target="#tarefas" type="button" role="tab">Tarefas</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab">Configurações</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab">Export/Import</button>
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
-      <!-- Aba Time -->
-      <div class="tab-pane fade show active" id="dev" role="tabpanel" aria-labelledby="dev-tab">
+      <!-- Aba Sprint -->
+      <div class="tab-pane fade show active" id="sprint" role="tabpanel">
         <div class="card mt-3">
           <div class="card-body">
-            <div id="developersContainer">
-              <!-- Cards de membro serão inseridos aqui -->
-            </div>
-            <button id="addDeveloper" class="btn btn-primary">Adicionar Membro</button>
-          </div>
-        </div>
-      </div>
-      <!-- Aba Configurações Globais -->
-      <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-        <div class="card mt-3">
-          <div class="card-body">
+            <h5 class="card-title">Informações da Sprint</h5>
             <div class="mb-3">
-              <label for="dailyWorkHours" class="form-label">Horas Diárias para Trabalho</label>
-              <input type="number" id="dailyWorkHours" class="form-control" value="8" min="0">
+              <label for="sprintTitle" class="form-label">Título</label>
+              <input type="text" class="form-control" id="sprintTitle" placeholder="Título da Sprint">
             </div>
-            <!-- Classificações de Desenvolvedor -->
-            <h5 class="section-title">Classificações de Desenvolvedor</h5>
-            <table class="table table-bordered" id="classificacaoTable">
-              <thead>
-                <tr>
-                  <th>Classificação</th>
-                  <th>Taxa (%)</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <button id="addClassificacao" class="btn btn-primary btn-sm mb-3">Adicionar Classificação</button>
-            <!-- Níveis de Maturidade -->
-            <h5 class="section-title">Maturidade no Projeto</h5>
-            <table class="table table-bordered" id="maturidadeTable">
-              <thead>
-                <tr>
-                  <th>Maturidade</th>
-                  <th>Taxa (%)</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <button id="addMaturidade" class="btn btn-primary btn-sm mb-3">Adicionar Nível de Maturidade</button>
-            <!-- Relação Story Points / Horas -->
-            <h5 class="section-title">Relação Story Points / Horas</h5>
-            <table class="table table-bordered" id="spHorasTable">
-              <thead>
-                <tr>
-                  <th>Story Points</th>
-                  <th>Horas</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <button id="addSPHoras" class="btn btn-primary btn-sm mb-3">Adicionar Relação</button>
-            <!-- Tipos de Membro -->
-            <h5 class="section-title">Tipos de Membro</h5>
-            <table class="table table-bordered" id="tipoTable">
-              <thead>
-                <tr>
-                  <th>Tipo</th>
-                  <th>Considerar na Capacidade</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <button id="addTipo" class="btn btn-primary btn-sm">Adicionar Tipo</button>
+            <div class="mb-3">
+              <label for="startDate" class="form-label">Data de Início</label>
+              <input type="date" class="form-control" id="startDate">
+            </div>
+            <div class="mb-3">
+              <label for="endDate" class="form-label">Data de Fim</label>
+              <input type="date" class="form-control" id="endDate">
+            </div>
+            <button class="btn btn-primary" onclick="updateSprint()">Atualizar Sprint</button>
+            <hr>
+            <div>
+              <strong>Horas Úteis Calculadas:</strong> <span id="workingHoursDisplay">0,00</span> horas
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Aba Dias Não Úteis -->
+      <div class="tab-pane fade" id="naoUteis" role="tabpanel">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Gestão de Dias Não Úteis</h5>
+            <div class="mb-3">
+              <label for="manualNonWorkingDate" class="form-label">Adicionar dia não útil (manual)</label>
+              <input type="date" class="form-control" id="manualNonWorkingDate">
+              <button class="btn btn-success mt-2" onclick="addManualNonWorkingDay()">Adicionar</button>
+            </div>
+            <h6>Lista de Dias Não Úteis:</h6>
+            <ul class="list-group" id="nonWorkingDaysList"></ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Aba Eventos -->
+      <div class="tab-pane fade" id="eventos" role="tabpanel">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Cadastro de Eventos da Sprint</h5>
+            <div class="mb-3">
+              <label for="eventType" class="form-label">Tipo de Evento</label>
+              <select class="form-select" id="eventType">
+                <option value="Planning">Planning</option>
+                <option value="Refinamento">Refinamento</option>
+                <option value="Review">Review</option>
+                <option value="Retrospectiva">Retrospectiva</option>
+                <option value="Daily">Daily</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="eventDescription" class="form-label">Descrição</label>
+              <input type="text" class="form-control" id="eventDescription">
+            </div>
+            <div class="mb-3">
+              <label for="eventDate" class="form-label">Data de Ocorrência</label>
+              <input type="date" class="form-control" id="eventDate">
+            </div>
+            <div class="mb-3">
+              <label for="eventTime" class="form-label">Tempo Gasto (minutos)</label>
+              <input type="number" class="form-control" id="eventTime" min="0">
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="eventRecurring">
+              <label class="form-check-label" for="eventRecurring">Recorrente (diariamente)</label>
+            </div>
+            <button class="btn btn-primary" onclick="addEvent()">Adicionar Evento</button>
+            <hr>
+            <h6>Lista de Eventos:</h6>
+            <ul class="list-group" id="eventsList"></ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Aba Time -->
+      <div class="tab-pane fade" id="time" role="tabpanel">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Cadastro de Membros da Equipe</h5>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="memberName" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="memberName">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="memberType" class="form-label">Tipo</label>
+                <input type="text" class="form-control" id="memberType" placeholder="Ex.: Desenvolvedor">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="memberClassification" class="form-label">Classificação</label>
+                <select class="form-select" id="memberClassification">
+                  <option value="Sênior">Sênior</option>
+                  <option value="Pleno">Pleno</option>
+                  <option value="Júnior">Júnior</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="memberMaturity" class="form-label">Maturidade</label>
+                <select class="form-select" id="memberMaturity">
+                  <option value="Plena">Plena</option>
+                  <option value="Mediana">Mediana</option>
+                  <option value="Inicial">Inicial</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="memberAvailability" class="form-label">Disponibilidade (%)</label>
+                <input type="number" class="form-control" id="memberAvailability" min="0" max="100" value="100">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="addMember()">Adicionar Membro</button>
+            <hr>
+            <h6>Equipe:</h6>
+            <div id="membersCards" class="row"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Aba Tarefas -->
+      <div class="tab-pane fade" id="tarefas" role="tabpanel">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Cadastro e Planejamento de Tarefas</h5>
+            <div class="mb-3">
+              <label for="taskId" class="form-label">ID da Tarefa</label>
+              <input type="text" class="form-control" id="taskId">
+            </div>
+            <div class="mb-3">
+              <label for="taskName" class="form-label">Nome da Tarefa</label>
+              <input type="text" class="form-control" id="taskName">
+            </div>
+            <div class="mb-3">
+              <label for="taskMember" class="form-label">Recurso (Membro)</label>
+              <select class="form-select" id="taskMember">
+                <option value="">Selecione</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="taskStoryPoints" class="form-label">Story Points</label>
+              <input type="number" class="form-control" id="taskStoryPoints" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="taskDependencies" class="form-label">Dependências (IDs separados por vírgula)</label>
+              <input type="text" class="form-control" id="taskDependencies">
+            </div>
+            <button class="btn btn-primary" onclick="addTask()">Adicionar Tarefa</button>
+            <button class="btn btn-secondary" onclick="calculateTaskDates()">Calcular Datas</button>
+            <hr>
+            <h6>Lista de Tarefas:</h6>
+            <ul class="list-group" id="tasksList"></ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Aba Configurações Globais -->
+      <div class="tab-pane fade" id="config" role="tabpanel">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Configurações Globais</h5>
+            <div class="mb-3">
+              <label for="globalHorasDiarias" class="form-label">Horas Diárias para Trabalho</label>
+              <input type="number" class="form-control" id="globalHorasDiarias" value="8">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tabela de Classificações (percentual)</label>
+              <input type="text" class="form-control" id="globalClassificacoes" value='{"Sênior":1.0,"Pleno":0.8,"Júnior":0.6}'>
+              <small class="text-muted">Formato JSON</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tabela de Maturidade (percentual)</label>
+              <input type="text" class="form-control" id="globalMaturidades" value='{"Plena":1.0,"Mediana":0.8,"Inicial":0.6}'>
+              <small class="text-muted">Formato JSON</small>
+            </div>
+            <div class="mb-3">
+              <label for="globalSpPorHora" class="form-label">Relação Story Points/Horas</label>
+              <input type="number" class="form-control" id="globalSpPorHora" value="0.25" step="0.01">
+              <small class="text-muted">Ex: 0.25 significa que cada hora representa 0.25 SP</small>
+            </div>
+            <div class="mb-3">
+              <label for="globalTiposContabilizados" class="form-label">Tipos de Membro Contabilizados (separados por vírgula)</label>
+              <input type="text" class="form-control" id="globalTiposContabilizados" value="Desenvolvedor,Tester">
+            </div>
+            <button class="btn btn-primary" onclick="updateGlobalConfig()">Atualizar Configurações</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Aba Exportação/Importação -->
+      <div class="tab-pane fade" id="export" role="tabpanel">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Exportação e Importação de Dados</h5>
+            <button class="btn btn-success" onclick="exportData()">Exportar Dados</button>
+            <input type="file" id="importFile" class="form-control mt-2">
+            <button class="btn btn-warning mt-2" onclick="importData()">Importar Dados</button>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- A lista de tarefas permanece -->
-    <div class="card mb-3">
-      <div class="card-header">Lista de Tarefas</div>
+    
+    <!-- Exibição da capacidade total do time -->
+    <div class="card mt-3">
       <div class="card-body">
-        <table class="table table-bordered" id="tasksTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome da Tarefa</th>
-              <th>Recurso</th>
-              <th>Story Points</th>
-              <th>Dependências</th>
-              <th>Data Inicial</th>
-              <th>Data Final</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Linhas de tarefas serão inseridas dinamicamente -->
-          </tbody>
-        </table>
-        <button id="addTask" class="btn btn-primary btn-sm">Adicionar Tarefa</button>
-        <button id="calculateTaskDatesBtn" class="btn btn-info btn-sm ms-2">Calcular Datas</button>
+        <h5>Total da Capacidade do Time: <span id="totalCapacity">0</span> SP</h5>
       </div>
     </div>
   </div>
-
-  <!-- Área de Exportação/Importação e exibição da versão -->
-  <div class="container my-4">
-    <button id="exportBtn" class="btn btn-secondary">Exportar Dados</button>
-    <button id="importBtn" class="btn btn-secondary">Importar Dados</button>
-    <input type="file" id="importFileInput" style="display: none;" accept="application/json" />
-    <div class="mt-2">
-      <small>Versão: <span id="appVersionDisplay"></span></small>
-    </div>
-  </div>
-
+  
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
-    /*********************** Funcionalidades Básicas ************************/
-    let nonWorkingDays = [];
-
-    function renderNonWorkingDaysList() {
-      const list = document.getElementById('nonWorkingDaysList');
-      list.innerHTML = '';
-      nonWorkingDays.sort();
-      nonWorkingDays.forEach(date => {
-        const li = document.createElement('li');
+  // Variáveis globais
+  let sprint = {
+    title: "",
+    startDate: null,
+    endDate: null
+  };
+  
+  // Arrays para gerenciar dias não úteis:
+  // - nonWorkingDaysManual: adicionados manualmente
+  // - nonWorkingDaysRemoved: dias de fim de semana que o usuário removeu (tornando-os úteis)
+  let nonWorkingDaysManual = [];
+  let nonWorkingDaysRemoved = [];
+  
+  let events = [];
+  let members = [];
+  let tasks = [];
+  
+  let globalConfig = {
+    horasDiarias: 8,
+    classificacoes: {"Sênior":1.0,"Pleno":0.8,"Júnior":0.6},
+    maturidades: {"Plena":1.0,"Mediana":0.8,"Inicial":0.6},
+    spPorHora: 0.25,
+    tiposContabilizados: ["Desenvolvedor", "Tester"]
+  };
+  
+  /* ----------------------- SPRINT E HORAS ÚTEIS ----------------------- */
+  function updateSprint() {
+    sprint.title = document.getElementById("sprintTitle").value;
+    sprint.startDate = document.getElementById("startDate").value;
+    sprint.endDate = document.getElementById("endDate").value;
+    
+    if (!sprint.startDate || !sprint.endDate) {
+      alert("Por favor, informe as duas datas.");
+      return;
+    }
+    
+    if (sprint.startDate > sprint.endDate) {
+      alert("A data de início não pode ser posterior à data de fim.");
+      return;
+    }
+    
+    // Ao atualizar a sprint, os dias não úteis serão recalculados
+    updateNonWorkingDaysList();
+    updateWorkingHoursDisplay();
+    updateMemberDropdown();
+  }
+  
+  // Calcula o número de dias úteis entre sprint.startDate e sprint.endDate
+  // Considera que, por padrão, sábados e domingos são não úteis,
+  // exceto se estiverem na lista de dias removidos.
+  function calculateWorkingDays() {
+    if (!sprint.startDate || !sprint.endDate) return 0;
+    let start = new Date(sprint.startDate);
+    let end = new Date(sprint.endDate);
+    let count = 0;
+    let current = new Date(start);
+    while (current <= end) {
+      let dateStr = current.toISOString().split('T')[0];
+      // Se o dia foi adicionado manualmente como não útil
+      if (nonWorkingDaysManual.includes(dateStr)) {
+        // Não conta como dia útil
+      } else if (nonWorkingDaysRemoved.includes(dateStr)) {
+        // Foi removido (mesmo que seja sábado/domingo): conta como útil
+        count++;
+      } else {
+        // Se for fim de semana (domingo ou sábado), não conta
+        if (current.getDay() === 0 || current.getDay() === 6) {
+          // Não conta
+        } else {
+          count++;
+        }
+      }
+      current.setDate(current.getDate() + 1);
+    }
+    return count;
+  }
+  
+  // Calcula as horas úteis totais da sprint (descontando eventos)
+  function calculateWorkingHours() {
+    let workingDays = calculateWorkingDays();
+    let totalHours = workingDays * globalConfig.horasDiarias;
+    
+    // Subtrai o tempo dos eventos
+    let eventHours = 0;
+    events.forEach(ev => {
+      if (ev.recorrente) {
+        eventHours += (ev.timeSpent / 60) * workingDays;
+      } else {
+        // Se o evento ocorre em um dia útil, subtrai o tempo
+        let evDateStr = new Date(ev.date).toISOString().split('T')[0];
+        if (isWorkingDay(evDateStr)) {
+          eventHours += ev.timeSpent / 60;
+        }
+      }
+    });
+    
+    let adjustedHours = totalHours - eventHours;
+    return adjustedHours;
+  }
+  
+  // Verifica se uma data (formato YYYY-MM-DD) é dia útil
+  function isWorkingDay(dateStr) {
+    let date = new Date(dateStr);
+    if (nonWorkingDaysManual.includes(dateStr)) return false;
+    if (nonWorkingDaysRemoved.includes(dateStr)) return true;
+    if (date.getDay() === 0 || date.getDay() === 6) return false;
+    return true;
+  }
+  
+  // Atualiza a exibição das horas úteis
+  function updateWorkingHoursDisplay() {
+    let hours = calculateWorkingHours();
+    document.getElementById("workingHoursDisplay").innerText = hours.toFixed(2).replace('.', ',');
+    updateMembersCapacity();
+  }
+  
+  /* ----------------------- DIAS NÃO ÚTEIS ----------------------- */
+  function addManualNonWorkingDay() {
+    let date = document.getElementById("manualNonWorkingDate").value;
+    if (!date) {
+      alert("Selecione uma data.");
+      return;
+    }
+    if (!nonWorkingDaysManual.includes(date)) {
+      nonWorkingDaysManual.push(date);
+      updateNonWorkingDaysList();
+      updateWorkingHoursDisplay();
+    }
+  }
+  
+  // Remove um dia não útil – se estiver manual remove, senão marca como removido (ou desmarca se já estava removido)
+  function removeNonWorkingDay(date) {
+    let index = nonWorkingDaysManual.indexOf(date);
+    if (index > -1) {
+      nonWorkingDaysManual.splice(index, 1);
+    } else {
+      let remIndex = nonWorkingDaysRemoved.indexOf(date);
+      if (remIndex > -1) {
+        nonWorkingDaysRemoved.splice(remIndex, 1);
+      } else {
+        nonWorkingDaysRemoved.push(date);
+      }
+    }
+    updateNonWorkingDaysList();
+    updateWorkingHoursDisplay();
+  }
+  
+  // Atualiza a lista exibida de dias não úteis
+  function updateNonWorkingDaysList() {
+    let list = document.getElementById("nonWorkingDaysList");
+    list.innerHTML = "";
+    
+    if (!sprint.startDate || !sprint.endDate) return;
+    let start = new Date(sprint.startDate);
+    let end = new Date(sprint.endDate);
+    let current = new Date(start);
+    let displayed = [];
+    while (current <= end) {
+      let dateStr = current.toISOString().split('T')[0];
+      let isNonWorking = false;
+      if (nonWorkingDaysManual.includes(dateStr)) {
+        isNonWorking = true;
+      } else if (!nonWorkingDaysRemoved.includes(dateStr) && (current.getDay() === 0 || current.getDay() === 6)) {
+        isNonWorking = true;
+      }
+      if (isNonWorking && !displayed.includes(dateStr)) {
+        displayed.push(dateStr);
+        let li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.textContent = date;
-        const btn = document.createElement('button');
-        btn.className = "btn btn-danger btn-sm";
-        btn.textContent = "Remover";
-        btn.addEventListener('click', () => {
-          nonWorkingDays = nonWorkingDays.filter(d => d !== date);
-          renderNonWorkingDaysList();
-          updateSprintEffectiveHours();
-        });
+        li.innerText = dateStr;
+        let btn = document.createElement("button");
+        btn.className = "btn btn-sm btn-danger";
+        btn.innerText = "Remover";
+        btn.onclick = function() { removeNonWorkingDay(dateStr); };
         li.appendChild(btn);
         list.appendChild(li);
-      });
-      updateSprintEffectiveHours();
-    }
-
-    function updateNonWorkingDaysFromDates() {
-      const startDateStr = document.getElementById('sprintStartDate').value;
-      const endDateStr = document.getElementById('sprintEndDate').value;
-      if (!startDateStr || !endDateStr) return;
-      const [startYear, startMonth, startDay] = startDateStr.split("-");
-      const startDate = new Date(startYear, startMonth - 1, startDay);
-      const [endYear, endMonth, endDay] = endDateStr.split("-");
-      const endDate = new Date(endYear, endMonth - 1, endDay);
-      if (startDate > endDate) return;
-      const autoWeekendDays = [];
-      let currentDate = new Date(startDate);
-      while (currentDate <= endDate) {
-        const dayOfWeek = currentDate.getDay();
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-          autoWeekendDays.push(currentDate.toISOString().split('T')[0]);
-        }
-        currentDate.setDate(currentDate.getDate() + 1);
       }
-      nonWorkingDays = autoWeekendDays;
-      renderNonWorkingDaysList();
-      updateSprintEffectiveHours();
+      current.setDate(current.getDate() + 1);
     }
-
-    document.getElementById('sprintStartDate').addEventListener('change', updateNonWorkingDaysFromDates);
-    document.getElementById('sprintEndDate').addEventListener('change', updateNonWorkingDaysFromDates);
-    document.getElementById('addNonWorkingDay').addEventListener('click', () => {
-      const input = document.getElementById('nonWorkingDayInput');
-      const date = input.value;
-      if (date && !nonWorkingDays.includes(date)) {
-        nonWorkingDays.push(date);
-        renderNonWorkingDaysList();
-        input.value = '';
-      }
+  }
+  
+  /* ----------------------- EVENTOS ----------------------- */
+  function addEvent() {
+    let type = document.getElementById("eventType").value;
+    let description = document.getElementById("eventDescription").value;
+    let date = document.getElementById("eventDate").value;
+    let timeSpent = parseFloat(document.getElementById("eventTime").value);
+    let recorrente = document.getElementById("eventRecurring").checked;
+    
+    if (!date || isNaN(timeSpent)) {
+      alert("Preencha os dados do evento corretamente.");
+      return;
+    }
+    
+    events.push({type, description, date, timeSpent, recorrente});
+    updateEventsList();
+    updateWorkingHoursDisplay();
+  }
+  
+  function updateEventsList() {
+    let list = document.getElementById("eventsList");
+    list.innerHTML = "";
+    events.forEach((ev, index) => {
+      let li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.innerText = ev.type + " - " + ev.description + " (" + ev.date + ", " + ev.timeSpent + " min" + (ev.recorrente ? ", recorrente" : "") + ")";
+      let btn = document.createElement("button");
+      btn.className = "btn btn-sm btn-danger";
+      btn.innerText = "Remover";
+      btn.onclick = function() { removeEvent(index); };
+      li.appendChild(btn);
+      list.appendChild(li);
     });
-
-    function addRowToTable(tableId, defaultValues) {
-      const tbody = document.querySelector("#" + tableId + " tbody");
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><input type="text" class="form-control campo1" value="${defaultValues[0] || ''}"></td>
-        <td><input type="number" class="form-control campo2" value="${defaultValues[1] || ''}" min="0"></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-config">Remover</button></td>
-      `;
-      tbody.appendChild(tr);
-      tr.querySelector('.remove-config').addEventListener('click', function () {
-        tr.remove();
-        updateDeveloperDropdowns();
-      });
-      updateDeveloperDropdowns();
+  }
+  
+  function removeEvent(index) {
+    events.splice(index, 1);
+    updateEventsList();
+    updateWorkingHoursDisplay();
+  }
+  
+  /* ----------------------- TIME ----------------------- */
+  function addMember() {
+    let name = document.getElementById("memberName").value;
+    let type = document.getElementById("memberType").value;
+    let classification = document.getElementById("memberClassification").value;
+    let maturity = document.getElementById("memberMaturity").value;
+    let availability = parseFloat(document.getElementById("memberAvailability").value);
+    
+    if (!name || !type || isNaN(availability)) {
+      alert("Preencha os dados do membro corretamente.");
+      return;
     }
-
-    function updateDeveloperDropdowns() {
-      let classificacoes = [];
-      document.querySelectorAll("#classificacaoTable tbody tr").forEach(tr => {
-        const nome = tr.querySelector('.campo1').value;
-        const taxa = tr.querySelector('.campo2').value;
-        if (nome.trim() !== "" && taxa.trim() !== "") {
-          classificacoes.push({ name: nome, rate: taxa });
-        }
-      });
-      let maturidades = [];
-      document.querySelectorAll("#maturidadeTable tbody tr").forEach(tr => {
-        const nivel = tr.querySelector('.campo1').value;
-        const taxa = tr.querySelector('.campo2').value;
-        if (nivel.trim() !== "" && taxa.trim() !== "") {
-          maturidades.push({ name: nivel, rate: taxa });
-        }
-      });
-      document.querySelectorAll('.dev-classificacao').forEach(select => {
-        const currentValue = select.value;
-        select.innerHTML = "";
-        classificacoes.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item.rate;
-          option.textContent = item.name + " (" + item.rate + "%)";
-          select.appendChild(option);
-        });
-        if (currentValue && classificacoes.some(i => i.rate === currentValue)) {
-          select.value = currentValue;
-        }
-      });
-      document.querySelectorAll('.dev-maturidade').forEach(select => {
-        const currentValue = select.value;
-        select.innerHTML = "";
-        maturidades.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item.rate;
-          option.textContent = item.name + " (" + item.rate + "%)";
-          select.appendChild(option);
-        });
-        if (currentValue && maturidades.some(i => i.rate === currentValue)) {
-          select.value = currentValue;
-        }
-      });
-    }
-
-    function addTipoRow(defaultValues) {
-      const tbody = document.querySelector("#tipoTable tbody");
-      const tr = document.createElement('tr');
-      const typeName = defaultValues[0] || '';
-      const considerFlag = (defaultValues[1] !== undefined) ? defaultValues[1] : true;
-      tr.innerHTML = `
-        <td><input type="text" class="form-control tipo-name" value="${typeName}"></td>
-        <td class="text-center"><input type="checkbox" class="form-check-input tipo-consider" ${considerFlag ? 'checked' : ''}></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-tipo">Remover</button></td>
-      `;
-      tbody.appendChild(tr);
-      tr.querySelector('.remove-tipo').addEventListener('click', function () {
-        tr.remove();
-        updateTipoDropdowns();
-      });
-      updateTipoDropdowns();
-    }
-
-    function updateTipoDropdowns() {
-      const tipos = [];
-      document.querySelectorAll("#tipoTable tbody tr").forEach(tr => {
-        const nome = tr.querySelector('.tipo-name').value;
-        const consider = tr.querySelector('.tipo-consider').checked;
-        if (nome.trim() !== "") {
-          tipos.push({ name: nome, consider: consider });
-        }
-      });
-      document.querySelectorAll('.dev-tipo').forEach(select => {
-        const currentValue = select.value;
-        select.innerHTML = "";
-        tipos.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item.name;
-          option.textContent = item.name + (item.consider ? " (Contabilizar na Capacidade)" : " (Não Contabilizar na Capacidade)");
-          select.appendChild(option);
-        });
-        if (currentValue && tipos.some(i => i.name === currentValue)) {
-          select.value = currentValue;
-        }
-      });
-    }
-
-    function getTipoMapping() {
-      const mapping = {};
-      document.querySelectorAll("#tipoTable tbody tr").forEach(tr => {
-        const nome = tr.querySelector('.tipo-name').value;
-        const consider = tr.querySelector('.tipo-consider').checked;
-        if (nome.trim() !== "") {
-          mapping[nome] = consider;
-        }
-      });
-      return mapping;
-    }
-
-    function addEventRow(defaultValues) {
-      const tbody = document.querySelector("#eventosTable tbody");
-      const tr = document.createElement('tr');
-      const tipoDefault = defaultValues && defaultValues[0] ? defaultValues[0] : "Planning";
-      const descricaoDefault = defaultValues && defaultValues[1] ? defaultValues[1] : "";
-      const dataDefault = defaultValues && defaultValues[2] ? defaultValues[2] : "";
-      const tempoDefault = defaultValues && defaultValues[3] ? defaultValues[3] : "";
-      const recorrenteDefault = defaultValues && defaultValues[4] ? "checked" : "";
-      tr.innerHTML = `
-        <td>
-          <select class="form-select event-type">
-            <option value="Planning" ${tipoDefault === "Planning" ? "selected" : ""}>Planning</option>
-            <option value="Refinamento" ${tipoDefault === "Refinamento" ? "selected" : ""}>Refinamento</option>
-            <option value="Review" ${tipoDefault === "Review" ? "selected" : ""}>Review</option>
-            <option value="Retrospectiva" ${tipoDefault === "Retrospectiva" ? "selected" : ""}>Retrospectiva</option>
-            <option value="Daily" ${tipoDefault === "Daily" ? "selected" : ""}>Daily</option>
-            <option value="Outros" ${tipoDefault === "Outros" ? "selected" : ""}>Outros</option>
-          </select>
-        </td>
-        <td><input type="text" class="form-control event-description" value="${descricaoDefault}"></td>
-        <td><input type="date" class="form-control event-date" value="${dataDefault}"></td>
-        <td><input type="number" class="form-control event-duration" value="${tempoDefault}" min="0"></td>
-        <td class="text-center"><input type="checkbox" class="form-check-input event-recurring" ${recorrenteDefault}></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-event">Remover</button></td>
-      `;
-      tbody.appendChild(tr);
-      tr.querySelectorAll('.event-date, .event-duration, .event-recurring').forEach(input => {
-        input.addEventListener('change', () => {
-          updateSprintEffectiveHours();
-        });
-      });
-      tr.querySelector('.remove-event').addEventListener('click', function () {
-        tr.remove();
-        updateSprintEffectiveHours();
-      });
-    }
-
-    document.getElementById('addEvento').addEventListener('click', function () {
-      addEventRow();
+    
+    let member = {name, type, classification, maturity, availability, capacity: 0};
+    members.push(member);
+    updateMembersCards();
+    updateMemberDropdown();
+    updateMembersCapacity();
+  }
+  
+  // Atualiza o dropdown de membros na aba de tarefas
+  function updateMemberDropdown() {
+    let dropdown = document.getElementById("taskMember");
+    dropdown.innerHTML = '<option value="">Selecione</option>';
+    members.forEach((member, index) => {
+      let option = document.createElement("option");
+      option.value = index;
+      option.innerText = member.name;
+      dropdown.appendChild(option);
     });
-
-    function calculateTotalWorkingHours() {
-      const startDateStr = document.getElementById('sprintStartDate').value;
-      const endDateStr = document.getElementById('sprintEndDate').value;
-      if (!startDateStr || !endDateStr) return 0;
-      const [startYear, startMonth, startDay] = startDateStr.split("-");
-      const startDate = new Date(startYear, startMonth - 1, startDay);
-      const [endYear, endMonth, endDay] = endDateStr.split("-");
-      const endDate = new Date(endYear, endMonth - 1, endDay);
-      if (startDate > endDate) return 0;
-      let workingDays = 0;
-      let currentDate = new Date(startDate);
-      while (currentDate <= endDate) {
-        const dateStr = currentDate.toISOString().split('T')[0];
-        if (!nonWorkingDays.includes(dateStr)) {
-          workingDays++;
-        }
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      const dailyHours = parseFloat(document.getElementById('dailyWorkHours').value) || 8;
-      let totalAvailableHours = workingDays * dailyHours;
-      const eventRows = document.querySelectorAll("#eventosTable tbody tr");
-      let totalEventHours = 0;
-      eventRows.forEach(tr => {
-        const eventDate = tr.querySelector('.event-date').value;
-        const eventDurationMinutes = parseFloat(tr.querySelector('.event-duration').value) || 0;
-        const isRecurring = tr.querySelector('.event-recurring').checked;
-        if (isRecurring) {
-          totalEventHours += (eventDurationMinutes / 60) * workingDays;
-        } else {
-          if (eventDate) {
-            const eventDateObj = new Date(eventDate);
-            if (eventDateObj >= startDate && eventDateObj <= endDate && !nonWorkingDays.includes(eventDate)) {
-              totalEventHours += (eventDurationMinutes / 60);
-            }
-          }
-        }
-      });
-      const effectiveHours = totalAvailableHours - totalEventHours;
-      return effectiveHours > 0 ? effectiveHours : 0;
-    }
-
-    // Atualiza as horas úteis e chama o cálculo da capacidade
-    function updateSprintEffectiveHours() {
-      const effectiveHours = calculateTotalWorkingHours();
-      document.getElementById('totalHorasSprint').value = effectiveHours.toFixed(2).replace('.', ',');
-      updateCapacity();
-    }
-
-    document.getElementById('dailyWorkHours').addEventListener('change', updateSprintEffectiveHours);
-
-    let developerCount = 0;
-    function createDeveloperCard() {
-      developerCount++;
-      const card = document.createElement('div');
+  }
+  
+  // Atualiza os "cards" dos membros cadastrados
+  function updateMembersCards() {
+    let container = document.getElementById("membersCards");
+    container.innerHTML = "";
+    members.forEach((member, index) => {
+      let col = document.createElement("div");
+      col.className = "col-md-4";
+      let card = document.createElement("div");
       card.className = "card mb-3";
-      card.innerHTML = `
-        <div class="card-header">
-          Membro ${developerCount}
-          <button type="button" class="btn-close float-end remove-developer" aria-label="Remover"></button>
-        </div>
-        <div class="card-body">
-          <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text" class="form-control dev-name" placeholder="Nome do Membro">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Tipo</label>
-            <select class="form-select dev-tipo"></select>
-          </div>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Classificação</label>
-              <select class="form-select dev-classificacao"></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Maturidade</label>
-              <select class="form-select dev-maturidade"></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Taxa de Disponibilidade (%)</label>
-              <input type="number" class="form-control dev-disponibilidade" value="100" min="0" max="100">
-            </div>
-          </div>
-          <div class="mt-3">
-            <label class="form-label">Capacidade do Membro (SP)</label>
-            <input type="text" class="form-control dev-capacidade" value="0" readonly>
-          </div>
-        </div>
-      `;
-      document.getElementById('developersContainer').appendChild(card);
-      card.querySelector('.remove-developer').addEventListener('click', function () {
-        card.remove();
-      });
-      updateDeveloperDropdowns();
-      updateTipoDropdowns();
+      let cardBody = document.createElement("div");
+      cardBody.className = "card-body";
+      cardBody.innerHTML = "<h5 class='card-title'>" + member.name + "</h5>" +
+                           "<p>Tipo: " + member.type + "</p>" +
+                           "<p>Classificação: " + member.classification + "</p>" +
+                           "<p>Maturidade: " + member.maturity + "</p>" +
+                           "<p>Disponibilidade: " + member.availability + "%</p>" +
+                           "<p>Capacidade: <span id='memberCapacity" + index + "'>" + member.capacity.toFixed(2) + "</span> SP</p>";
+      card.appendChild(cardBody);
+      col.appendChild(card);
+      container.appendChild(col);
+    });
+    updateTotalCapacity();
+  }
+  
+  // Atualiza a capacidade individual dos membros com base nas horas disponíveis ajustadas
+  function updateMembersCapacity() {
+    let adjustedHours = calculateWorkingHours();
+    members.forEach((member, index) => {
+      if (!globalConfig.tiposContabilizados.includes(member.type)) {
+        member.capacity = 0;
+      } else {
+        let memberHours = adjustedHours * (member.availability/100) *
+                          (globalConfig.classificacoes[member.classification] || 1) *
+                          (globalConfig.maturidades[member.maturity] || 1);
+        member.capacity = memberHours * globalConfig.spPorHora;
+      }
+      let capElem = document.getElementById("memberCapacity" + index);
+      if (capElem) {
+        capElem.innerText = member.capacity.toFixed(2);
+      }
+    });
+    updateTotalCapacity();
+  }
+  
+  // Atualiza a capacidade total do time
+  function updateTotalCapacity() {
+    let total = members.reduce((sum, member) => sum + member.capacity, 0);
+    document.getElementById("totalCapacity").innerText = total.toFixed(2);
+  }
+  
+  /* ----------------------- TAREFAS ----------------------- */
+  function addTask() {
+    let id = document.getElementById("taskId").value;
+    let name = document.getElementById("taskName").value;
+    let memberIndex = document.getElementById("taskMember").value;
+    let storyPoints = parseFloat(document.getElementById("taskStoryPoints").value);
+    let dependencies = document.getElementById("taskDependencies").value.split(",").map(s => s.trim()).filter(s => s);
+    
+    if (!id || !name || isNaN(storyPoints)) {
+      alert("Preencha os dados da tarefa corretamente.");
+      return;
     }
-
-    document.getElementById('addDeveloper').addEventListener('click', function () {
-      createDeveloperCard();
+    
+    if (dependencies.includes(id)) {
+      alert("Uma tarefa não pode depender de si mesma.");
+      return;
+    }
+    
+    if (tasks.find(t => t.id === id)) {
+      alert("ID de tarefa duplicado.");
+      return;
+    }
+    
+    let task = {id, name, memberIndex: memberIndex !== "" ? parseInt(memberIndex) : null, storyPoints, dependencies, startDate: "", endDate: ""};
+    tasks.push(task);
+    updateTasksList();
+  }
+  
+  function updateTasksList() {
+    let list = document.getElementById("tasksList");
+    list.innerHTML = "";
+    tasks.forEach(task => {
+      let li = document.createElement("li");
+      li.className = "list-group-item";
+      li.innerHTML = "<strong>" + task.id + "</strong> - " + task.name +
+                     " | SP: " + task.storyPoints +
+                     " | Início: " + (task.startDate || "-") +
+                     " | Fim: " + (task.endDate || "-") +
+                     " | Dependências: " + task.dependencies.join(", ");
+      list.appendChild(li);
     });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      addRowToTable("classificacaoTable", ["Sênior", "100"]);
-      addRowToTable("classificacaoTable", ["Sênior-Pleno", "85"]);
-      addRowToTable("classificacaoTable", ["Pleno", "70"]);
-      addRowToTable("classificacaoTable", ["Júnior-Pleno", "65"]);
-      addRowToTable("classificacaoTable", ["Júnior", "50"]);
-      addRowToTable("classificacaoTable", ["Estagiário", "35"]);
-      addRowToTable("maturidadeTable", ["Plena", "100"]);
-      addRowToTable("maturidadeTable", ["Mediana", "80"]);
-      addRowToTable("maturidadeTable", ["Inicial", "60"]);
-      addRowToTable("spHorasTable", ["13", "39"]);
-      addRowToTable("spHorasTable", ["8", "24"]);
-      addRowToTable("spHorasTable", ["5", "15"]);
-      addRowToTable("spHorasTable", ["3", "9"]);
-      addRowToTable("spHorasTable", ["2", "6"]);
-      addRowToTable("spHorasTable", ["1", "3"]);
-      addRowToTable("spHorasTable", ["0", "0"]);
-      updateDeveloperDropdowns();
-      addTipoRow(["Desenvolvedor", true]);
-      addTipoRow(["Tester", false]);
-      createDeveloperCard();
-    });
-
-    document.getElementById('addClassificacao').addEventListener('click', function () {
-      addRowToTable("classificacaoTable", ["", ""]);
-    });
-    document.getElementById('addMaturidade').addEventListener('click', function () {
-      addRowToTable("maturidadeTable", ["", ""]);
-    });
-    document.getElementById('addSPHoras').addEventListener('click', function () {
-      addRowToTable("spHorasTable", ["", ""]);
-    });
-    document.getElementById('addTipo').addEventListener('click', function () {
-      addTipoRow(["", true]);
-    });
-
-    /***************** Função para calcular a capacidade de cada membro *****************/
-    // Função definida para converter horas disponíveis e mapeamento de SP para capacidade (SP)
-    function calcularCapacidadePorDev(availableHours, spMapping) {
-      let capacity = 0;
-      let horaAtual = availableHours;
-      while (horaAtual > 0) {
-        let repetiu = true;
-        for (let i = 0; i < spMapping.length; i++) {
-          const requiredHours = parseFloat(spMapping[i].horas);
-          const spValue = parseFloat(spMapping[i].sp);
-          if (requiredHours > 0 && requiredHours <= horaAtual) {
-            horaAtual -= requiredHours;
-            capacity += spValue;
-            repetiu = false;
-            break;
+  }
+  
+  // Função auxiliar para somar dias úteis a uma data (desconsiderando dias não úteis)
+  function addWorkingDays(startDate, days) {
+    let date = new Date(startDate);
+    while (days > 0) {
+      date.setDate(date.getDate() + 1);
+      if (isWorkingDay(date.toISOString().split('T')[0])) {
+        days--;
+      }
+    }
+    return date.toISOString().split('T')[0];
+  }
+  
+  // Calcula as datas (início e fim) das tarefas com base na data de início da sprint, dependências e mapeamento
+  function calculateTaskDates() {
+    if (!sprint.startDate) {
+      alert("Defina a data de início da sprint.");
+      return;
+    }
+    
+    // Ordena as tarefas (por ID)
+    tasks.sort((a, b) => a.id.localeCompare(b.id));
+    
+    tasks.forEach(task => {
+      let start = sprint.startDate;
+      task.dependencies.forEach(depId => {
+        let depTask = tasks.find(t => t.id === depId);
+        if (depTask && depTask.endDate) {
+          if (depTask.endDate > start) {
+            start = addWorkingDays(depTask.endDate, 1);
           }
         }
-        if (repetiu) {
-          for (let j = spMapping.length - 1; j >= 0; j--) {
-            const requiredHours = parseFloat(spMapping[j].horas);
-            if (requiredHours > 0) {
-              if (spMapping.length > 1) {
-                capacity += parseFloat(spMapping[spMapping.length - 2].sp);
-              } else {
-                capacity += parseFloat(spMapping[0].sp);
-              }
-              horaAtual = 0;
-              break;
-            }
-          }
-        }
-      }
-      return capacity;
-    }
-
-    // Atualiza a capacidade dos membros e da sprint com formatação
-    function updateCapacity() {
-      const sprintEffectiveHours = calculateTotalWorkingHours();
-      document.getElementById('totalHorasSprint').value = sprintEffectiveHours.toFixed(2).replace('.', ',');
-
-      let spMapping = [];
-      document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
-        const sp = tr.querySelector('.campo1').value;
-        const horas = tr.querySelector('.campo2').value;
-        if (sp.trim() !== "" && horas.trim() !== "") {
-          spMapping.push({ sp: sp, horas: horas });
-        }
       });
-      let totalTeamCapacity = 0;
-      const tipoMapping = getTipoMapping();
-      document.querySelectorAll('#developersContainer .card').forEach(card => {
-        const disponibilidade = parseFloat(card.querySelector('.dev-disponibilidade').value) || 100;
-        const classificacaoRate = parseFloat(card.querySelector('.dev-classificacao').value) || 100;
-        const maturidadeRate = parseFloat(card.querySelector('.dev-maturidade').value) || 100;
-        const devEffectiveHours = sprintEffectiveHours * (disponibilidade / 100) * (classificacaoRate / 100) * (maturidadeRate / 100);
-        let devCapacity = calcularCapacidadePorDev(devEffectiveHours, spMapping);
-        const tipoSelect = card.querySelector('.dev-tipo');
-        const selectedTipo = tipoSelect ? tipoSelect.value : "";
-        if (tipoMapping[selectedTipo] === false) {
-          devCapacity = 0;
-        }
-        totalTeamCapacity += devCapacity;
-        card.querySelector('.dev-capacidade').value = devCapacity.toFixed(2).replace('.', ',');
-      });
-      document.getElementById('totalCapacityDisplay').value = totalTeamCapacity.toFixed(2).replace('.', ',');
-    }
-
-    // Atualiza capacidade ao alterar campos específicos
-    document.addEventListener("input", function (e) {
-      if (
-        e.target.classList.contains("dev-disponibilidade") ||
-        e.target.classList.contains("dev-classificacao") ||
-        e.target.classList.contains("dev-maturidade") ||
-        e.target.classList.contains("campo1") ||
-        e.target.classList.contains("campo2")
-      ) {
-        updateCapacity();
-      }
+      task.startDate = start;
+      let durationHours = task.storyPoints / globalConfig.spPorHora;
+      let durationDays = Math.ceil(durationHours / globalConfig.horasDiarias);
+      task.endDate = addWorkingDays(start, durationDays - 1);
     });
-
-    /***************** Seção Tarefas *****************/
-    function updateTaskResourceDropdowns() {
-      const devNames = [];
-      document.querySelectorAll("#developersContainer .dev-name").forEach(input => {
-        const name = input.value.trim();
-        if (name !== "") {
-          devNames.push(name);
-        }
-      });
-      document.querySelectorAll("#tasksTable tbody .task-resource").forEach(select => {
-        const importedVal = select.getAttribute("data-imported-value") || "";
-        const currentValue = importedVal || select.value;
-        select.innerHTML = `<option value="">Selecione...</option>`;
-        devNames.forEach(name => {
-          const option = document.createElement("option");
-          option.value = name;
-          option.textContent = name;
-          select.appendChild(option);
-        });
-        if (currentValue && devNames.includes(currentValue)) {
-          select.value = currentValue;
-          select.removeAttribute("data-imported-value");
-        }
-      });
+    
+    updateTasksList();
+  }
+  
+  /* ----------------------- CONFIGURAÇÕES GLOBAIS ----------------------- */
+  function updateGlobalConfig() {
+    let horas = parseFloat(document.getElementById("globalHorasDiarias").value);
+    let classificacoes = JSON.parse(document.getElementById("globalClassificacoes").value);
+    let maturidades = JSON.parse(document.getElementById("globalMaturidades").value);
+    let spPorHora = parseFloat(document.getElementById("globalSpPorHora").value);
+    let tipos = document.getElementById("globalTiposContabilizados").value.split(",").map(s => s.trim());
+    
+    globalConfig.horasDiarias = horas;
+    globalConfig.classificacoes = classificacoes;
+    globalConfig.maturidades = maturidades;
+    globalConfig.spPorHora = spPorHora;
+    globalConfig.tiposContabilizados = tipos;
+    
+    updateWorkingHoursDisplay();
+    updateMembersCapacity();
+  }
+  
+  /* ----------------------- EXPORTAÇÃO/IMPORTAÇÃO ----------------------- */
+  function exportData() {
+    let data = {
+      sprint,
+      nonWorkingDaysManual,
+      nonWorkingDaysRemoved,
+      events,
+      members,
+      tasks,
+      globalConfig,
+      version: "Calculadora de Capacidade Scrum – v1.0"
+    };
+    let dataStr = JSON.stringify(data, null, 2);
+    let blob = new Blob([dataStr], {type: "application/json"});
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "dados_sprint.json";
+    a.click();
+  }
+  
+  function importData() {
+    let fileInput = document.getElementById("importFile");
+    if (fileInput.files.length === 0) {
+      alert("Selecione um arquivo para importação.");
+      return;
     }
-
-
-    function updateTaskSPOptions() {
-      const spOptions = [];
-      document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
-        const spVal = tr.querySelector(".campo1").value.trim();
-        if (spVal !== "" && !spOptions.includes(spVal)) {
-          spOptions.push(spVal);
-        }
-      });
-      document.querySelectorAll("#tasksTable tbody .task-sp").forEach(select => {
-        const importedVal = select.getAttribute("data-imported-value") || "";
-        const currentValue = importedVal || select.value;
-        select.innerHTML = `<option value="">Selecione...</option>`;
-        spOptions.forEach(sp => {
-          const option = document.createElement("option");
-          option.value = sp;
-          option.textContent = sp;
-          select.appendChild(option);
-        });
-        if (currentValue && spOptions.includes(currentValue)) {
-          select.value = currentValue;
-          select.removeAttribute("data-imported-value");
-        }
-      });
-    }
-
-
-    function addTaskRow() {
-      const tbody = document.querySelector("#tasksTable tbody");
-      const rowCount = tbody.querySelectorAll("tr").length;
-      const defaultId = rowCount + 1;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><input type="number" class="form-control task-id" value="${defaultId}" /></td>
-        <td><input type="text" class="form-control task-name" placeholder="Nome da Tarefa" /></td>
-        <td>
-          <select class="form-select task-resource">
-            <option value="">Selecione...</option>
-          </select>
-        </td>
-        <td>
-          <select class="form-select task-sp">
-            <option value="">Selecione...</option>
-          </select>
-        </td>
-        <td><input type="text" class="form-control task-dependencies" placeholder="IDs separados por vírgula" /></td>
-        <td><input type="date" class="form-control task-start-date" /></td>
-        <td><input type="date" class="form-control task-end-date" /></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-task">Remover</button></td>
-      `;
-      tbody.appendChild(tr);
-      const idInput = tr.querySelector(".task-id");
-      idInput.addEventListener("change", validateTaskIDs);
-      const dependenciesInput = tr.querySelector(".task-dependencies");
-      dependenciesInput.addEventListener("change", function () {
-        validateTaskDependencies(tr);
-      });
-      tr.querySelector(".remove-task").addEventListener("click", function () {
-        const removedId = tr.querySelector(".task-id").value;
-        tr.remove();
-        removeDependencyFromTasks(removedId);
-      });
-      updateTaskResourceDropdowns();
-      updateTaskSPOptions();
-    }
-
-    function getTaskIDs() {
-      const ids = [];
-      document.querySelectorAll("#tasksTable tbody .task-id").forEach(input => {
-        const val = input.value.trim();
-        if (val !== "") {
-          ids.push(val);
-        }
-      });
-      return ids;
-    }
-
-    function validateTaskIDs() {
-      const allIds = getTaskIDs();
-      const idInputs = document.querySelectorAll("#tasksTable tbody .task-id");
-      idInputs.forEach(input => {
-        const currentVal = input.value.trim();
-        if (currentVal === "") return;
-        const occurrences = allIds.filter(id => id === currentVal).length;
-        if (occurrences > 1) {
-          alert("ID de tarefa duplicado: " + currentVal + ". Cada tarefa deve ter um ID único.");
-          input.value = "";
-        }
-      });
-    }
-
-    function validateTaskDependencies(row) {
-      const idInput = row.querySelector(".task-id");
-      const taskId = idInput.value.trim();
-      const depInput = row.querySelector(".task-dependencies");
-      let deps = depInput.value.split(",").map(d => d.trim()).filter(d => d !== "");
-      const validIds = getTaskIDs();
-      const filteredDeps = deps.filter(dep => {
-        if (dep === taskId) {
-          alert("Uma tarefa não pode depender dela mesma: " + dep);
-          return false;
-        }
-        if (!validIds.includes(dep)) {
-          alert("Dependência inválida: " + dep + ". Essa tarefa não existe.");
-          return false;
-        }
-        return true;
-      });
-      depInput.value = filteredDeps.join(", ");
-    }
-
-    function removeDependencyFromTasks(removedId) {
-      document.querySelectorAll("#tasksTable tbody .task-dependencies").forEach(depInput => {
-        let deps = depInput.value.split(",").map(d => d.trim()).filter(d => d !== "");
-        if (deps.includes(removedId)) {
-          deps = deps.filter(d => d !== removedId);
-          depInput.value = deps.join(", ");
-        }
-      });
-    }
-
-    document.addEventListener("input", function (e) {
-      if (e.target.classList.contains("dev-name")) {
-        updateTaskResourceDropdowns();
+    let file = fileInput.files[0];
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        let data = JSON.parse(e.target.result);
+        sprint = data.sprint;
+        nonWorkingDaysManual = data.nonWorkingDaysManual;
+        nonWorkingDaysRemoved = data.nonWorkingDaysRemoved;
+        events = data.events;
+        members = data.members;
+        tasks = data.tasks;
+        globalConfig = data.globalConfig;
+        // Atualiza os campos e listas
+        document.getElementById("sprintTitle").value = sprint.title;
+        document.getElementById("startDate").value = sprint.startDate;
+        document.getElementById("endDate").value = sprint.endDate;
+        document.getElementById("globalHorasDiarias").value = globalConfig.horasDiarias;
+        document.getElementById("globalClassificacoes").value = JSON.stringify(globalConfig.classificacoes);
+        document.getElementById("globalMaturidades").value = JSON.stringify(globalConfig.maturidades);
+        document.getElementById("globalSpPorHora").value = globalConfig.spPorHora;
+        document.getElementById("globalTiposContabilizados").value = globalConfig.tiposContabilizados.join(",");
+        updateNonWorkingDaysList();
+        updateWorkingHoursDisplay();
+        updateEventsList();
+        updateMembersCards();
+        updateMemberDropdown();
+        updateTasksList();
+      } catch (err) {
+        alert("Erro ao importar dados: " + err);
       }
-    });
-
-    document.getElementById("addTask").addEventListener("click", addTaskRow);
-
-    /***************** Cálculo Automático das Datas das Tarefas *****************/
-    function formatDate(date) {
-      let yyyy = date.getFullYear();
-      let mm = String(date.getMonth() + 1).padStart(2, '0');
-      let dd = String(date.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
-    }
-
-    function isWorkingDay(date) {
-      let dateStr = formatDate(date);
-      return !nonWorkingDays.includes(dateStr);
-    }
-
-    function getNextWorkingDate(date) {
-      let d = new Date(date);
-      while (!isWorkingDay(d)) {
-        d.setDate(d.getDate() + 1);
-      }
-      return d;
-    }
-
-    function addWorkingDays(date, days) {
-      let d = new Date(date);
-      while (days > 0) {
-        d.setDate(d.getDate() + 1);
-        if (isWorkingDay(d)) {
-          days--;
-        }
-      }
-      return d;
-    }
-
-    function getSPMapping() {
-      let mapping = {};
-      document.querySelectorAll("#spHorasTable tbody tr").forEach(tr => {
-        const spVal = tr.querySelector(".campo1").value.trim();
-        const horasVal = tr.querySelector(".campo2").value.trim();
-        if (spVal !== "" && horasVal !== "") {
-          mapping[spVal] = parseFloat(horasVal);
-        }
-      });
-      return mapping;
-    }
-
-    function calculateTaskDates() {
-      const sprintStartStr = document.getElementById("sprintStartDate").value;
-      if (!sprintStartStr) {
-        alert("Informe a data de início da sprint.");
-        return;
-      }
-      const sprintStart = new Date(sprintStartStr);
-      const dailyWorkHours = parseFloat(document.getElementById("dailyWorkHours").value) || 8;
-      const spMapping = getSPMapping();
-      let taskRows = Array.from(document.querySelectorAll("#tasksTable tbody tr"));
-      let tasks = taskRows.map(row => {
-        const id = parseInt(row.querySelector(".task-id").value.trim());
-        const resource = row.querySelector(".task-resource").value.trim();
-        const sp = row.querySelector(".task-sp").value.trim();
-        const deps = row.querySelector(".task-dependencies").value.split(",").map(d => d.trim()).filter(d => d !== "");
-        return { id, resource, sp, deps, row, start: null, end: null };
-      });
-      tasks.sort((a, b) => a.id - b.id);
-      const resourceDates = {};
-      tasks.forEach(task => {
-        if (!task.resource) {
-          task.start = "";
-          task.end = "";
-          return;
-        }
-        if (!resourceDates[task.resource]) {
-          resourceDates[task.resource] = new Date(sprintStart);
-        }
-        let candidate = new Date(resourceDates[task.resource]);
-        task.deps.forEach(depId => {
-          const depTask = tasks.find(t => t.id == depId);
-          if (depTask && depTask.end) {
-            const depEnd = new Date(depTask.end);
-            const nextDay = addWorkingDays(depEnd, 1);
-            if (nextDay > candidate) {
-              candidate = nextDay;
-            }
-          }
-        });
-        candidate = getNextWorkingDate(candidate);
-        let durationDays = 1;
-        if (task.sp in spMapping) {
-          const horasNecessarias = spMapping[task.sp];
-          durationDays = Math.ceil(horasNecessarias / dailyWorkHours);
-        }
-        task.start = candidate;
-        const taskEnd = addWorkingDays(candidate, durationDays - 1);
-        task.end = taskEnd;
-        resourceDates[task.resource] = addWorkingDays(taskEnd, 1);
-      });
-      tasks.forEach(task => {
-        const startInput = task.row.querySelector(".task-start-date");
-        const endInput = task.row.querySelector(".task-end-date");
-        startInput.value = task.start ? formatDate(task.start) : "";
-        endInput.value = task.end ? formatDate(task.end) : "";
-      });
-    }
-
-    document.getElementById("calculateTaskDatesBtn").addEventListener("click", calculateTaskDates);
-
-    /***************** Funcionalidade de Exportação/Importação *****************/
-    const appVersion = "calculadora de capacidade scrum - v1.2.5";
-    document.getElementById("appVersionDisplay").innerText = appVersion;
-
-    function exportData() {
-      let data = {
-        version: appVersion,
-        sprint: {
-          title: document.getElementById("sprintTitle").value,
-          startDate: document.getElementById("sprintStartDate").value,
-          endDate: document.getElementById("sprintEndDate").value
-        },
-        nonWorkingDays: nonWorkingDays,
-        events: [],
-        teamMembers: [],
-        tasks: [],
-        globalSettings: {
-          dailyWorkHours: document.getElementById("dailyWorkHours").value,
-          classificacoes: [],
-          maturities: [],
-          spMapping: [],
-          tipos: []
-        }
-      };
-
-      document.querySelectorAll("#eventosTable tbody tr").forEach(row => {
-        let eventType = row.querySelector(".event-type").value;
-        let description = row.querySelector(".event-description").value;
-        let date = row.querySelector(".event-date").value;
-        let duration = row.querySelector(".event-duration").value;
-        let recurring = row.querySelector(".event-recurring").checked;
-        data.events.push({ eventType, description, date, duration, recurring });
-      });
-
-      document.querySelectorAll("#developersContainer .card").forEach(card => {
-        let name = card.querySelector(".dev-name").value;
-        let tipo = card.querySelector(".dev-tipo").value;
-        let classificacao = card.querySelector(".dev-classificacao").value;
-        let maturidade = card.querySelector(".dev-maturidade").value;
-        let disponibilidade = card.querySelector(".dev-disponibilidade").value;
-        data.teamMembers.push({ name, tipo, classificacao, maturidade, disponibilidade });
-      });
-
-      document.querySelectorAll("#tasksTable tbody tr").forEach(row => {
-        let id = row.querySelector(".task-id").value;
-        let name = row.querySelector(".task-name").value;
-        let resource = row.querySelector(".task-resource").value;
-        let sp = row.querySelector(".task-sp").value;
-        let dependencies = row.querySelector(".task-dependencies").value;
-        let startDate = row.querySelector(".task-start-date").value;
-        let endDate = row.querySelector(".task-end-date").value;
-        data.tasks.push({ id, name, resource, sp, dependencies, startDate, endDate });
-      });
-
-      document.querySelectorAll("#classificacaoTable tbody tr").forEach(row => {
-        let classification = row.querySelector(".campo1").value;
-        let rate = row.querySelector(".campo2").value;
-        data.globalSettings.classificacoes.push({ classification, rate });
-      });
-
-      document.querySelectorAll("#maturidadeTable tbody tr").forEach(row => {
-        let maturity = row.querySelector(".campo1").value;
-        let rate = row.querySelector(".campo2").value;
-        data.globalSettings.maturities.push({ maturity, rate });
-      });
-
-      document.querySelectorAll("#spHorasTable tbody tr").forEach(row => {
-        let sp = row.querySelector(".campo1").value;
-        let hours = row.querySelector(".campo2").value;
-        data.globalSettings.spMapping.push({ sp, hours });
-      });
-
-      document.querySelectorAll("#tipoTable tbody tr").forEach(row => {
-        let tipo = row.querySelector(".tipo-name").value;
-        let consider = row.querySelector(".tipo-consider").checked;
-        data.globalSettings.tipos.push({ tipo, consider });
-      });
-
-      let jsonStr = JSON.stringify(data, null, 2);
-      let fileName = "dados.json";
-      let blob = new Blob([jsonStr], { type: "application/json" });
-      let link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = fileName;
-      link.click();
-    }
-
-    function importDataFromFile(event) {
-      let file = event.target.files[0];
-      if (!file) return;
-      let reader = new FileReader();
-      reader.onload = function (e) {
-        try {
-          let jsonData = JSON.parse(e.target.result);
-          importData(jsonData);
-        } catch (err) {
-          alert("Erro ao importar o arquivo: " + err);
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function importData(data) {
-      document.getElementById("sprintTitle").value = data.sprint.title || "";
-      document.getElementById("sprintStartDate").value = data.sprint.startDate || "";
-      document.getElementById("sprintEndDate").value = data.sprint.endDate || "";
-      nonWorkingDays = data.nonWorkingDays || [];
-      renderNonWorkingDaysList();
-
-      let eventosTbody = document.querySelector("#eventosTable tbody");
-      eventosTbody.innerHTML = "";
-      (data.events || []).forEach(eventObj => {
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>
-            <select class="form-select event-type">
-              <option value="Planning" ${eventObj.eventType === "Planning" ? "selected" : ""}>Planning</option>
-              <option value="Refinamento" ${eventObj.eventType === "Refinamento" ? "selected" : ""}>Refinamento</option>
-              <option value="Review" ${eventObj.eventType === "Review" ? "selected" : ""}>Review</option>
-              <option value="Retrospectiva" ${eventObj.eventType === "Retrospectiva" ? "selected" : ""}>Retrospectiva</option>
-              <option value="Daily" ${eventObj.eventType === "Daily" ? "selected" : ""}>Daily</option>
-              <option value="Outros" ${eventObj.eventType === "Outros" ? "selected" : ""}>Outros</option>
-            </select>
-          </td>
-          <td><input type="text" class="form-control event-description" value="${eventObj.description}" /></td>
-          <td><input type="date" class="form-control event-date" value="${eventObj.date}" /></td>
-          <td><input type="number" class="form-control event-duration" value="${eventObj.duration}" min="0" /></td>
-          <td class="text-center"><input type="checkbox" class="form-check-input event-recurring" ${eventObj.recurring ? "checked" : ""} /></td>
-          <td><button type="button" class="btn btn-danger btn-sm remove-event">Remover</button></td>
-        `;
-        eventosTbody.appendChild(tr);
-        tr.querySelectorAll('.event-date, .event-duration, .event-recurring').forEach(input => {
-          input.addEventListener('change', updateSprintEffectiveHours);
-        });
-        tr.querySelector('.remove-event').addEventListener('click', function () {
-          tr.remove();
-          updateSprintEffectiveHours();
-        });
-      });
-
-      let devContainer = document.getElementById("developersContainer");
-      devContainer.innerHTML = "";
-      (data.teamMembers || []).forEach(member => {
-        let card = document.createElement("div");
-        card.className = "card mb-3";
-        card.innerHTML = `
-          <div class="card-header">
-            Membro
-            <button type="button" class="btn-close float-end remove-developer" aria-label="Remover"></button>
-          </div>
-          <div class="card-body">
-            <div class="mb-3">
-              <label class="form-label">Nome</label>
-              <input type="text" class="form-control dev-name" placeholder="Nome do Membro" value="${member.name}" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Tipo</label>
-              <select class="form-select dev-tipo"></select>
-            </div>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label">Classificação</label>
-                <select class="form-select dev-classificacao"></select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Maturidade</label>
-                <select class="form-select dev-maturidade"></select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Taxa de Disponibilidade (%)</label>
-                <input type="number" class="form-control dev-disponibilidade" value="${member.disponibilidade}" min="0" max="100" />
-              </div>
-            </div>
-            <div class="mt-3">
-              <label class="form-label">Capacidade do Membro (SP)</label>
-              <input type="text" class="form-control dev-capacidade" value="0" readonly />
-            </div>
-          </div>
-        `;
-        devContainer.appendChild(card);
-        card.querySelector('.remove-developer').addEventListener('click', function () {
-          card.remove();
-          updateCapacity();
-        });
-      });
-      updateDeveloperDropdowns();
-      updateTipoDropdowns();
-
-      let tasksTbody = document.querySelector("#tasksTable tbody");
-      tasksTbody.innerHTML = "";
-      (data.tasks || []).forEach(task => {
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="number" class="form-control task-id" value="${task.id}" /></td>
-          <td><input type="text" class="form-control task-name" placeholder="Nome da Tarefa" value="${task.name}" /></td>
-          <td>
-            <select class="form-select task-resource">
-              <option value="">Selecione...</option>
-            </select>
-          </td>
-          <td>
-            <select class="form-select task-sp">
-              <option value="">Selecione...</option>
-            </select>
-          </td>
-          <td><input type="text" class="form-control task-dependencies" placeholder="IDs separados por vírgula" value="${task.dependencies}" /></td>
-          <td><input type="date" class="form-control task-start-date" value="${task.startDate}" /></td>
-          <td><input type="date" class="form-control task-end-date" value="${task.endDate}" /></td>
-          <td><button type="button" class="btn btn-danger btn-sm remove-task">Remover</button></td>
-        `;
-        tasksTbody.appendChild(tr);
-        const idInput = tr.querySelector(".task-id");
-        idInput.addEventListener("change", validateTaskIDs);
-        const dependenciesInput = tr.querySelector(".task-dependencies");
-        dependenciesInput.addEventListener("change", function () {
-          validateTaskDependencies(tr);
-        });
-        tr.querySelector(".remove-task").addEventListener("click", function () {
-          const removedId = tr.querySelector(".task-id").value;
-          tr.remove();
-          removeDependencyFromTasks(removedId);
-        });
-        // Preserva os valores importados:
-        let resourceSelect = tr.querySelector(".task-resource");
-        resourceSelect.setAttribute("data-imported-value", task.resource || "");
-        let spSelect = tr.querySelector(".task-sp");
-        spSelect.setAttribute("data-imported-value", task.sp || "");
-      });
-
-      document.getElementById("dailyWorkHours").value = data.globalSettings.dailyWorkHours || 8;
-
-      let classificacaoTbody = document.querySelector("#classificacaoTable tbody");
-      classificacaoTbody.innerHTML = "";
-      (data.globalSettings.classificacoes || []).forEach(item => {
-        addRowToTable("classificacaoTable", [item.classification, item.rate]);
-      });
-
-      let maturidadeTbody = document.querySelector("#maturidadeTable tbody");
-      maturidadeTbody.innerHTML = "";
-      (data.globalSettings.maturities || []).forEach(item => {
-        addRowToTable("maturidadeTable", [item.maturity, item.rate]);
-      });
-
-      let spTbody = document.querySelector("#spHorasTable tbody");
-      spTbody.innerHTML = "";
-      (data.globalSettings.spMapping || []).forEach(item => {
-        addRowToTable("spHorasTable", [item.sp, item.hours]);
-      });
-
-      let tipoTbody = document.querySelector("#tipoTable tbody");
-      tipoTbody.innerHTML = "";
-      (data.globalSettings.tipos || []).forEach(item => {
-        addTipoRow([item.tipo, item.consider]);
-      });
-
-      updateTaskResourceDropdowns();
-      updateTaskSPOptions();
-
-      updateSprintEffectiveHours();
-    }
-
-    /***************** Eventos de Exportação/Importação *****************/
-    document.getElementById("exportBtn").addEventListener("click", exportData);
-    document.getElementById("importBtn").addEventListener("click", function () {
-      document.getElementById("importFileInput").click();
-    });
-    document.getElementById("importFileInput").addEventListener("change", importDataFromFile);
+    };
+    reader.readAsText(file);
+  }
   </script>
 </body>
-
 </html>
